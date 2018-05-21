@@ -12,8 +12,7 @@ for i = 1:dim(1)
     gl = glr_test(p,q,beta,th(i));
     gl.pfa_test()
     fprintf('pfa')
-    gl.pd_test_av()
-    gl.pd_test_wc()
+    gl.pd_test_av_and_wc()
     pfa(i) = gl.pfa;
     pd_wc(i) = gl.pd_wc;
     pd_av(i) = gl.pd_av;
