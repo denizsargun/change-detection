@@ -62,7 +62,6 @@ classdef glr_test < handle
                             obj.pd_test_ch()
                             obj.pd_av = obj.pd_av+obj.pd;
                             count = count+1;
-                            count
                         end
                         
                     end
@@ -92,6 +91,31 @@ classdef glr_test < handle
                 
             end
             
+        end
+        
+        function pd_test_av_and_wc(obj) % uniform average of pd over changed detections
+            obj.pd_av = 0;
+            count = 0;
+            obj.pd_wc = inf;
+            for i = 1:obj.n+1
+                for j = 1:obj.n+1
+                    if obj.is_dist(i,j) == 1
+                        if obj.mean(obj.dist(i,j,:)) >= obj.beta
+                            d = obj.dist(i,j,:);
+                            obj.r = d(:); % to change the dimension from 1x1x3
+                            obj.pd_test_ch()
+                            obj.pd_av = obj.pd_av+obj.pd;
+                            count = count+1
+                            obj.pd_wc = min(obj.pd,obj.pd_wc);
+                        end
+                        
+                    end
+                    
+                end
+                
+            end
+            
+            obj.pd_av = obj.pd_av/count;
         end
         
         function pd_test_ch(obj) % pd test per changed distribution
