@@ -3,7 +3,7 @@ clc
 p = prob_simplex();
 q = [1/3;1/3;1/3];
 beta = 1/4;
-th = 2.^(-10)';
+th = 2.^(-10:10)';
 dim = length(th);
 pfa = zeros(dim,1);
 pd_wc = zeros(dim,1);
