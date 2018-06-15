@@ -18,6 +18,8 @@ classdef test < handle
         eps % allowed error in I-projection
         iProj % I-projection of 
         mProj % M-projection of \tilde{p}, the empirical dist
+        mProjIt
+        % mProjLearningRate
         klParam % kl div test parameters, [klMean; klRadius]
         klPerf % [probability of false alarm; worst case probability of detection;
         % average probability of detection]
@@ -32,7 +34,7 @@ classdef test < handle
     end
     
     methods
-        function obj = test(a,n,q,beta,klParam,meanParam,lmpParam,glrParam,pfaIt,pmdIt)
+        function obj = test(a,n,q,beta,klParam,meanParam,lmpParam,glrParam,pfaIt,pmdIt,mProjIt)
             obj.a = sort(a);
             obj.m = length(obj.a);
             obj.n = n;
@@ -40,6 +42,8 @@ classdef test < handle
             obj.q = q;
             obj.beta = beta;
             obj.eps = min(abs(a-circshift(a,1)))/1e5;
+            obj.mProjIt = mProjIt;
+            % obj.mProjLearningRate = 1/2;
             obj.util = util(obj);
             obj.util.i_proj(obj.q,obj.beta);
             obj.klParam = klParam;
@@ -54,7 +58,7 @@ classdef test < handle
             obj.klTest = kl_test(obj);
             obj.meanTest = mean_test(obj);
             obj.lmpTest = lmp_test(obj);
-            %obj.glrTest = glr_test(d,q,beta,glrParam);
+            obj.glrTest = glr_test(obj);
             obj.pfaIt = pfaIt;
             obj.pmdIt = pmdIt;
             obj.falseAlarm = false_alarm(obj);

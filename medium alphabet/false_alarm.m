@@ -42,29 +42,50 @@ classdef false_alarm < handle
 
         end
         
+%         function kl_pfa(obj)
+%             % probability of false alarm for the KL divergence test
+%             numberOfFalseAlarms = 0;
+%             total = 0;
+%             for i = 1:obj.test.pfaIt
+%                 [dist,numberOfTrials] = obj.test.util.realize_mean(obj.test.q,obj.klMean);
+%                 numberOfFalseAlarms = numberOfFalseAlarms+obj.test.klTest.kl_change(dist);
+%                 total = total+numberOfTrials;
+%             end
+%             
+%             obj.test.klPerf(1) = numberOfFalseAlarms/total;
+%         end
+
         function kl_pfa(obj)
             % probability of false alarm for the KL divergence test
             numberOfFalseAlarms = 0;
-            total = 0;
             for i = 1:obj.test.pfaIt
-                [dist,numberOfTrials] = obj.test.util.realize_mean(obj.test.q,obj.klMean);
-                numberOfFalseAlarms = numberOfFalseAlarms+obj.test.klTest.kl_change(dist);
-                total = total+numberOfTrials;
+                dist = obj.test.util.realize(obj.test.q);
+                numberOfFalseAlarms = numberOfFalseAlarms+obj.test.klTest.is_change(dist);
             end
             
-            obj.test.klPerf(1) = numberOfFalseAlarms/total;
+            obj.test.klPerf(1) = numberOfFalseAlarms/obj.test.pfaIt;
         end
         
+%         function mean_pfa(obj)
+%             total = 0;
+%             for i = 1:obj.test.pfaIt
+%                 [~,numberOfTrials] = obj.test.util.realize_mean(obj.test.q,obj.meanParam);
+%                 % no need to test at this point since the returned dist has
+%                 % mean(dist) >= meanParam
+%                 total = total+numberOfTrials;
+%             end
+%             
+%             obj.test.meanPerf(1) = obj.test.pfaIt/total;
+%         end
+
         function mean_pfa(obj)
-            total = 0;
+            numberOfFalseAlarms = 0;
             for i = 1:obj.test.pfaIt
-                [~,numberOfTrials] = obj.test.util.realize_mean(obj.test.q,obj.meanParam);
-                % no need to test at this point since the returned dist has
-                % mean(dist) >= meanParam
-                total = total+numberOfTrials;
+                dist = obj.test.util.realize(obj.test.q);
+                numberOfFalseAlarms = numberOfFalseAlarms+obj.test.meanTest.is_change(dist);
             end
             
-            obj.test.meanPerf(1) = obj.test.pfaIt/total;
+            obj.test.meanPerf(1) = numberOfFalseAlarms/obj.test.pfaIt;
         end
         
         function lmp_pfa(obj)
@@ -82,6 +103,7 @@ classdef false_alarm < handle
             for i = 1:obj.test.pfaIt
                 dist = obj.test.util.realize(obj.test.q);
                 numberOfFalseAlarms = numberOfFalseAlarms+obj.test.glrTest.is_change(dist);
+                i
             end
             
             obj.test.glrPerf(1) = numberOfFalseAlarms/obj.test.pfaIt;

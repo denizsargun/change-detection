@@ -22,4 +22,3 @@ classdef lmp_test < handle
     end
     
 end
-

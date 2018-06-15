@@ -20,8 +20,8 @@ classdef util < handle
 
         function i_proj(obj,dist,mean)
             % I-project dist to the convex set {mean(dist)>=mean}
-            proj = dist;
-            if obj.mean(proj)>= mean
+            obj.test.iProj = dist;
+            if obj.mean(obj.test.iProj)>= mean
                 return
             end
             
@@ -30,20 +30,76 @@ classdef util < handle
             % tilt dist iteratively until error is small
             err = inf;
             while abs(err)>obj.eps
-                proj = proj.*exp(sign(err)*obj.eps*obj.test.a);
-                proj = proj/sum(proj);
-                err = mean-obj.mean(proj);
+                obj.test.iProj = obj.test.iProj.*exp(sign(err)*obj.eps*obj.test.a);
+                obj.test.iProj = obj.test.iProj/sum(obj.test.iProj);
+                err = mean-obj.mean(obj.test.iProj);
             end
             
-            obj.test.iProj = proj;
         end
+        
+        function m_proj(obj,dist,mean)
+            % iterative optimization to find M-projection of dist over set
+            % of distributions with mean(dist)>= mean
+            % 1. computing the mProj is a convex problem
+            % 2. it is optimal to have support(mProj) as a subset
+            % of support(dist) for the problem without the mean constraint,
+            % ie. if dist was a finite sequence of nonnegative numbers,
+            % unnormalized
+            % 3. if mean(dist)>= mean, dist is optimal
+            obj.test.mProj = dist;
+            if obj.mean(obj.test.mProj) >= mean
+                return
+            end
+            
+%             for i = 1:obj.test.mProjIt
+%                 obj.gradient_step(dist,obj.test.mProjLearningRate/i);
+%                 obj.proj(); % obj.proj() is NOT a suitable projection,
+%                 % projection should be on the constrained set defined by
+%                 % the mean
+%             end
+
+            minD = inf;
+            for i = 1:obj.test.mProjIt
+                [dummy, ~] = obj.realize_mean(dist,mean);
+                d = obj.kl_d(dist,dummy);
+                if d <= minD
+                    minD = d;
+                    obj.test.mProj = dummy;
+                end
+                
+            end
+            
+        end
+        
+%         function gradient_step(obj,dist,rate)
+%             % rate is learning rate
+%             obj.test.mProj = obj.test.mProj+rate*dist./obj.test.mProj;
+%         end
+%         
+%         function proj(obj)
+%             % project onto the probability simplex
+%             s = sum(obj.test.mProj);
+%             obj.test.mProj = obj.test.mProj-(s-1)/obj.test.m*ones(obj.test.m,1);
+%             if sum(obj.test.mProj>= zeros(obj.test.m)) == obj.test.m
+%                 return
+%             else
+%                 while sum(obj.test.mProj>= zeros(obj.test.m)) ~= obj.test.m
+%                     % min(mProj) is negative
+%                     [minm, minIndex] = min(obj.test.mProj);
+%                     obj.test.mProj = obj.test.mProj+minm/(obj.test.m-1)*ones(obj.test.m,1);
+%                     obj.test.mProj(minIndex) = 0;
+%                 end
+%                 
+%             end
+%             
+%         end
            
         function p = emp_prob_calc(obj,dist,emp_dist)
             % calculate the probability of observing emp_dist from dist in
             % n trials
             d2 = zeros(obj.test.n,1);
             d3 = obj.test.n*tril(ones(obj.test.m),-1)*emp_dist;
-            for i = 1:obj.test.m
+            for i = 1:obj.test.m-1
                 d2(round(d3(i))+1:round(d3(i+1))) = 1:round(obj.test.n*emp_dist(i)); % debugging rounding error by round()
             end
     
@@ -111,7 +167,7 @@ classdef util < handle
             % mean
             numberOfTrials = 0;
             err = inf;
-            while mean < err
+            while 0 < err
                 realEmpDist = obj.realize(dist);
                 err = mean-obj.mean(realEmpDist);
                 numberOfTrials = numberOfTrials+1;
