@@ -25,19 +25,19 @@ classdef misdetection < handle
             % possible methods: 'kl_test', 'mean_test', 'lmp_test',
             % 'glr_test', 'all'
             if strcmp(method,'kl_test') || strcmp(method,'all')
-                obj.kl_pfa();
+                obj.kl_pmd();
             end
             
             if strcmp(method,'mean_test') || strcmp(method,'all')
-                obj.mean_pfa();
+                obj.mean_pmd();
             end
             
             if strcmp(method,'lmp_test') || strcmp(method,'all')
-                obj.lmp_pfa();
+                obj.lmp_pmd();
             end
             
             if strcmp(method,'glr_test') || strcmp(method,'all')
-                obj.glr_pfa();
+                obj.glr_pmd();
             end
 
         end
@@ -47,14 +47,14 @@ classdef misdetection < handle
             numberOfMisdetections = 0;
             for i = 1:obj.test.pmdIt
                 dist = obj.test.util.random_dist_mean(obj.test.beta);
-                empDist = obj.util.realize(dist);
+                empDist = obj.test.util.realize(dist);
                 numberOfMisdetections = numberOfMisdetections+(1-obj.test.klTest.is_change(empDist));
             end
             
             obj.test.klPerf(2) = numberOfMisdetections/obj.test.pmdIt;
         end
 
-        function mean_pfa(obj)
+        function mean_pmd(obj)
             numberOfMisdetections = 0;
             for i = 1:obj.test.pmdIt
                 dist = obj.test.util.random_dist_mean(obj.test.beta);
@@ -65,7 +65,7 @@ classdef misdetection < handle
             obj.test.meanPerf(2) = numberOfMisdetections/obj.test.pmdIt;
         end
         
-        function lmp_pfa(obj)
+        function lmp_pmd(obj)
             numberOfMisdetections = 0;
             for i = 1:obj.test.pmdIt
                 dist = obj.test.util.random_dist_mean(obj.test.beta);
@@ -76,13 +76,12 @@ classdef misdetection < handle
             obj.test.lmpPerf(2) = numberOfMisdetections/obj.test.pmdIt;
         end
         
-        function glr_pfa(obj)
+        function glr_pmd(obj)
             numberOfMisdetections = 0;
             for i = 1:obj.test.pmdIt
                 dist = obj.test.util.random_dist_mean(obj.test.beta);
                 empDist = obj.test.util.realize(dist);
                 numberOfMisdetections = numberOfMisdetections+(1-obj.test.glrTest.is_change(empDist));
-                i
             end
             
             obj.test.glrPerf(2) = numberOfMisdetections/obj.test.pmdIt;

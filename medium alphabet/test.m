@@ -8,6 +8,7 @@ classdef test < handle
         lmpTest % locally most powerful test object
         glrTest % generalized likelihood ratio test object
         falseAlarm
+        misdetection
         a % alphabet, in ascending order
         m % alphabet size
         n % sample size
@@ -62,6 +63,7 @@ classdef test < handle
             obj.pfaIt = pfaIt;
             obj.pmdIt = pmdIt;
             obj.falseAlarm = false_alarm(obj);
+            obj.misdetection = misdetection(obj);
         end
         
     end

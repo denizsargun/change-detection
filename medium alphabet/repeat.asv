@@ -2,7 +2,7 @@ classdef repeat < handle
     % coordinate number of repetetions for each test
     properties
         klMeanRange = (0.1:0.05:0.4)';
-        klRadiusRange = 2.^(-9:0.5:-3)';
+        klRadiusRange = 2.^(-9:-0.5:-3)';
         meanMeanRange = (0.1:0.05:0.4)';
         lmpThrRange = (-2:0.5:5);
         glrThrRange = 2.^(1:0.5:10)';
@@ -16,14 +16,14 @@ classdef repeat < handle
         t % test object
         excelFileName = 'test_results.xlsx';
         testNames = [string('klTest'),string('meanTest'),string('lmpTest'),string('glrTest')]; % also the excel sheet names
-        testTypes = [string('pfa');string('pmd')];
+        testTypes = ['pfa';'pmd'];
     end
     
     methods
         function obj = repeat()
-            for i = 1:length(obj.klMeanRange)
-                for j = 1:length(obj.klRadiusRange)
-                    klParam = [obj.klMeanRange(i);obj.klRadiusRange(j)];
+            for i = obj.klMeanRange
+                for j = obj.klRadiusRange
+                    klParam = [i;j];
                     meanParam = 0; % dummy
                     lmpParam = 0; % dummy
                     glrParam = 0; % dummy
@@ -36,9 +36,9 @@ classdef repeat < handle
                 
             end
 
-            for i = 1:length(obj.meanMeanRange)
+            for i = obj.meanMeanRange
                     klParam = [0;0]; % dummy
-                    meanParam = obj.meanMeanRange(i);
+                    meanParam = i;
                     lmpParam = 0; % dummy
                     glrParam = 0; % dummy
                     obj.t = test(obj.a,obj.n,obj.q,obj.beta,klParam,meanParam,lmpParam,glrParam,obj.pfaIt,obj.pmdIt,obj.mProjIt);
@@ -48,10 +48,10 @@ classdef repeat < handle
                     obj.xls_write(obj.t.meanPerf(2),obj.testTypes(2),obj.testNames(2),meanParam)
             end
             
-            for i = 1:length(obj.lmpThrRange)
+            for i = obj.lmpThrRange
                     klParam = [0;0]; % dummy
                     meanParam = 0;
-                    lmpParam = obj.lmpThrRange(i); % dummy
+                    lmpParam = i; % dummy
                     glrParam = 0; % dummy
                     obj.t = test(obj.a,obj.n,obj.q,obj.beta,klParam,meanParam,lmpParam,glrParam,obj.pfaIt,obj.pmdIt,obj.mProjIt);
                     obj.t.falseAlarm.run_pfa('lmp_test')
@@ -60,11 +60,11 @@ classdef repeat < handle
                     obj.xls_write(obj.t.lmpPerf(2),obj.testTypes(2),obj.testNames(3),lmpParam)
             end
             
-            for i = 1:length(obj.glrThrRange)
+            for i = obj.glrThrRange
                     klParam = [0;0]; % dummy
                     meanParam = 0;
                     lmpParam = 0; % dummy
-                    glrParam = obj.glrThrRange(i); % dummy
+                    glrParam = i; % dummy
                     obj.t = test(obj.a,obj.n,obj.q,obj.beta,klParam,meanParam,lmpParam,glrParam,obj.pfaIt,obj.pmdIt,obj.mProjIt);
                     obj.t.falseAlarm.run_pfa('glr_test')
                     obj.xls_write(obj.t.glrPerf(1),obj.testTypes(1),obj.testNames(4),glrParam)
@@ -117,8 +117,6 @@ classdef repeat < handle
             end
             
             xlswrite(obj.excelFileName,result,char(testName),cellName)
-            testName
-            cellName
         end
         
     end
