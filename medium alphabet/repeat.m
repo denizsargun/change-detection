@@ -117,6 +117,7 @@ classdef repeat < handle
             end
             
             xlswrite(obj.excelFileName,result,char(testName),cellName)
+            result
             testName
             cellName
         end
