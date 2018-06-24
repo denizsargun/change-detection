@@ -10,8 +10,8 @@ classdef repeat < handle
         n = 50;
         q = 1/3*ones(3,1);
         beta = 1/4;
-        pfaIt = 1e4;
-        pmdIt = 1e4;
+        pfaIt = 1e5;
+        pmdIt = 1e5;
         mProjIt = 1e2;
         t % test object
         excelFileName = 'test_results.xlsx';
