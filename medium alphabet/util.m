@@ -46,11 +46,12 @@ classdef util < handle
             % ie. if dist was a finite sequence of nonnegative numbers,
             % unnormalized
             % 3. if mean(dist)>= mean, dist is optimal
-            obj.test.mProj = dist;
-            if obj.mean(obj.test.mProj) >= mean
-                return
-            end
-            
+%             method 1, incorrect
+%             obj.test.mProj = dist;
+%             if obj.mean(obj.test.mProj) >= mean
+%                 return
+%             end
+%             
 %             for i = 1:obj.test.mProjIt
 %                 obj.gradient_step(dist,obj.test.mProjLearningRate/i);
 %                 obj.proj(); % obj.proj() is NOT a suitable projection,
@@ -58,17 +59,34 @@ classdef util < handle
 %                 % the mean
 %             end
 
-            minD = inf;
-            for i = 1:obj.test.mProjIt
-                [dummy, ~] = obj.realize_mean(dist,mean);
-                d = obj.kl_d(dist,dummy);
-                if d <= minD
-                    minD = d;
-                    obj.test.mProj = dummy;
-                end
-                
-            end
-            
+%             method 2, slow
+%             obj.test.mProj = dist;
+%             if obj.mean(obj.test.mProj) >= mean
+%                 return
+%             end
+% 
+%             minD = inf;
+%             for i = 1:obj.test.mProjIt
+%                 [dummy, ~] = obj.realize_mean(dist,mean);
+%                 d = obj.kl_d(dist,dummy);
+%                 if d <= minD
+%                     minD = d;
+%                     obj.test.mProj = dummy;
+%                 end
+%                 
+%             end
+
+            % method 3, use cvx
+            % to use cvx matlab package run cvx_setup.m from
+            % http://cvxr.com/cvx/download/ (CVX Research Inc.)
+            cvx_begin quiet
+            variable proj(obj.test.m)
+            proj >= 0
+            sum(proj) == 1
+            obj.test.a'*proj >= obj.test.beta
+            minimize(-dist'*log(proj))
+            cvx_end
+            obj.test.mProj = proj
         end
         
 %         function gradient_step(obj,dist,rate)
@@ -98,8 +116,9 @@ classdef util < handle
             % calculate the probability of observing emp_dist from dist in
             % n trials
             d2 = zeros(obj.test.n,1);
-            d3 = obj.test.n*tril(ones(obj.test.m),-1)*emp_dist;
-            for i = 1:obj.test.m-1
+            d3 = tril(ones(obj.test.m),-1)*obj.test.n*emp_dist;
+            d3(obj.test.m+1) = obj.test.n;
+            for i = 1:obj.test.m
                 d2(round(d3(i))+1:round(d3(i+1))) = 1:round(obj.test.n*emp_dist(i)); % debugging rounding error by round()
             end
     

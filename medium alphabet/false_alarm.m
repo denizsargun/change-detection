@@ -103,6 +103,10 @@ classdef false_alarm < handle
             for i = 1:obj.test.pfaIt
                 dist = obj.test.util.realize(obj.test.q);
                 numberOfFalseAlarms = numberOfFalseAlarms+obj.test.glrTest.is_change(dist);
+                disp('threshold parameter')
+                obj.test.glrParam
+                disp('false alarm test number')
+                i
             end
             
             obj.test.glrPerf(1) = numberOfFalseAlarms/obj.test.pfaIt;

@@ -82,6 +82,10 @@ classdef misdetection < handle
                 dist = obj.test.util.random_dist_mean(obj.test.beta);
                 empDist = obj.test.util.realize(dist);
                 numberOfMisdetections = numberOfMisdetections+(1-obj.test.glrTest.is_change(empDist));
+                disp('threshold parameter')
+                obj.test.glrParam
+                disp('misdetection test number')
+                i
             end
             
             obj.test.glrPerf(2) = numberOfMisdetections/obj.test.pmdIt;
