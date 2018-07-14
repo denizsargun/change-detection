@@ -1,17 +1,17 @@
 classdef repeat < handle
     % coordinate number of repetetions for each test
     properties
-        klMeanRange = (0:0.05:0.5)';
-        klRadiusRange = 2.^(-4:-2)';
-        meanMeanRange = (0.05:0.05:0.4)';
-        lmpThrRange = -2.^[1 1.2 1.4 1.6 1.8 2 2.025 2.05 2.075 2.1 2.125]';
+        klMeanRange = (0:0.02:0.4)';
+        klRadiusRange = 2.^(-9:-3)';
+        meanMeanRange = (0.01:0.01:0.4)';
+        lmpThrRange = -2.^(1:.5:5)';
         glrThrRange = 2.^(4:0.5:4)';
         a = [-2 -1 0 1 2]';
         n = 50;
         q = 1/5*ones(5,1);
         beta = 1/4;
-        pfaIt = 1e5;
-        pmdIt = 1e5;
+        pfaIt = 1e4;
+        pmdIt = 1e4;
         mProjIt = 1e3;
         t % test object
         excelFileName = 'test_results.xlsx';
@@ -21,23 +21,23 @@ classdef repeat < handle
     
     methods
         function obj = repeat()
-            tic
-            for i = 1:length(obj.klMeanRange)
-                for j = 1:length(obj.klRadiusRange)
-                    klParam = [obj.klMeanRange(i);obj.klRadiusRange(j)];
-                    meanParam = 0; % dummy
-                    lmpParam = 0; % dummy
-                    glrParam = 0; % dummy
-                    obj.t = test(obj.a,obj.n,obj.q,obj.beta,klParam,meanParam,lmpParam,glrParam,obj.pfaIt,obj.pmdIt,obj.mProjIt);
-                    obj.t.falseAlarm.run_pfa('kl_test')
-                    obj.xls_write(obj.t.klPerf(1),obj.testTypes(1),obj.testNames(1),klParam)
-                    obj.t.misdetection.run_pmd('kl_test')
-                    obj.xls_write(obj.t.klPerf(2),obj.testTypes(2),obj.testNames(1),klParam)
-                end
-                
-            end
-
-            toc
+%             tic
+%             for i = 1:length(obj.klMeanRange)
+%                 for j = 1:length(obj.klRadiusRange)
+%                     klParam = [obj.klMeanRange(i);obj.klRadiusRange(j)];
+%                     meanParam = 0; % dummy
+%                     lmpParam = 0; % dummy
+%                     glrParam = 0; % dummy
+%                     obj.t = test(obj.a,obj.n,obj.q,obj.beta,klParam,meanParam,lmpParam,glrParam,obj.pfaIt,obj.pmdIt,obj.mProjIt);
+%                     obj.t.falseAlarm.run_pfa('kl_test')
+%                     obj.xls_write(obj.t.klPerf(1),obj.testTypes(1),obj.testNames(1),klParam)
+%                     obj.t.misdetection.run_pmd('kl_test')
+%                     obj.xls_write(obj.t.klPerf(2),obj.testTypes(2),obj.testNames(1),klParam)
+%                 end
+%                 
+%             end
+% 
+%             toc
 %             tic
 %             for i = 1:length(obj.meanMeanRange)
 %                     klParam = [0;0]; % dummy
@@ -52,20 +52,20 @@ classdef repeat < handle
 %             end
 %             
 %             toc
-%             tic
-%             for i = 1:length(obj.lmpThrRange)
-%                     klParam = [0;0]; % dummy
-%                     meanParam = 0; % dummy
-%                     lmpParam = obj.lmpThrRange(i);
-%                     glrParam = 0; % dummy
-%                     obj.t = test(obj.a,obj.n,obj.q,obj.beta,klParam,meanParam,lmpParam,glrParam,obj.pfaIt,obj.pmdIt,obj.mProjIt);
-%                     obj.t.falseAlarm.run_pfa('lmp_test')
-%                     obj.xls_write(obj.t.lmpPerf(1),obj.testTypes(1),obj.testNames(3),lmpParam)
-%                     obj.t.misdetection.run_pmd('lmp_test')
-%                     obj.xls_write(obj.t.lmpPerf(2),obj.testTypes(2),obj.testNames(3),lmpParam)
-%             end
-%             
-%             toc
+            tic
+            for i = 1:length(obj.lmpThrRange)
+                    klParam = [0;0]; % dummy
+                    meanParam = 0; % dummy
+                    lmpParam = obj.lmpThrRange(i);
+                    glrParam = 0; % dummy
+                    obj.t = test(obj.a,obj.n,obj.q,obj.beta,klParam,meanParam,lmpParam,glrParam,obj.pfaIt,obj.pmdIt,obj.mProjIt);
+                    obj.t.falseAlarm.run_pfa('lmp_test')
+                    obj.xls_write(obj.t.lmpPerf(1),obj.testTypes(1),obj.testNames(3),lmpParam)
+                    obj.t.misdetection.run_pmd('lmp_test')
+                    obj.xls_write(obj.t.lmpPerf(2),obj.testTypes(2),obj.testNames(3),lmpParam)
+            end
+            
+            toc
 %             tic
 %             for i = 1:length(obj.glrThrRange)
 %                     klParam = [0;0]; % dummy
@@ -90,7 +90,7 @@ classdef repeat < handle
                     d2 = char(find(parameter(2) == obj.klRadiusRange)+65); % turning into ascii
                     cellName = strcat(d2,d1);
                 else
-                    d1 = num2str(find(parameter(1) == obj.klMeanRange)+15);
+                    d1 = num2str(find(parameter(1) == obj.klMeanRange)+10);
                     d2 = char(find(parameter(2) == obj.klRadiusRange)+65); % turning into ascii
                     cellName = strcat(d2,d1);
                 end

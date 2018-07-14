@@ -83,10 +83,10 @@ classdef util < handle
             variable proj(obj.test.m)
             proj >= 0
             sum(proj) == 1
-            obj.test.a'*proj >= obj.test.beta
+            obj.test.a'*proj >= mean
             minimize(-dist'*log(proj))
             cvx_end
-            obj.test.mProj = proj
+            obj.test.mProj = proj;
         end
         
 %         function gradient_step(obj,dist,rate)
