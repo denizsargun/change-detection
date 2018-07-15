@@ -1,7 +1,7 @@
 classdef repeat < handle
     % coordinate number of repetetions for each test
     properties
-        klMeanRange = (0:0.05:0.5)';
+        klMeanRange = (-0.5:0.05:0.5)';
         klRadiusRange = 2.^(-4:-2)';
         meanMeanRange = (0.05:0.05:0.4)';
         lmpThrRange = -2.^[1 1.2 1.4 1.6 1.8 2 2.025 2.05 2.075 2.1 2.125]';
@@ -125,7 +125,7 @@ classdef repeat < handle
             end
             
             xlswrite(obj.excelFileName,result,char(testName),cellName)
-%             result
+            result
 %             testName
 %             cellName
         end
