@@ -1,10 +1,10 @@
 classdef repeat < handle
     % coordinate number of repetetions for each test
     properties
-        klMeanRange = (-0.5:0.05:0.5)';
-        klRadiusRange = 2.^(-4:-2)';
-        meanMeanRange = (0.05:0.05:0.4)';
-        lmpThrRange = -2.^[1 1.2 1.4 1.6 1.8 2 2.025 2.05 2.075 2.1 2.125]';
+        klMeanRange = (0:0.05:0.25)';
+        klRadiusRange = 2.^(-4.5:0.5:-1)';
+        meanMeanRange = (0:0.05:0.25)';
+        lmpThrRange = -2.^[0.8:0.2:1.8]';
         glrThrRange = 2.^(4:0.5:4)';
         a = [-2 -1 0 1 2]';
         n = 50;
@@ -38,34 +38,34 @@ classdef repeat < handle
             end
 
             toc
-%             tic
-%             for i = 1:length(obj.meanMeanRange)
-%                     klParam = [0;0]; % dummy
-%                     meanParam = obj.meanMeanRange(i);
-%                     lmpParam = 0; % dummy
-%                     glrParam = 0; % dummy
-%                     obj.t = test(obj.a,obj.n,obj.q,obj.beta,klParam,meanParam,lmpParam,glrParam,obj.pfaIt,obj.pmdIt,obj.mProjIt);
-%                     obj.t.falseAlarm.run_pfa('mean_test')
-%                     obj.xls_write(obj.t.meanPerf(1),obj.testTypes(1),obj.testNames(2),meanParam)
-%                     obj.t.misdetection.run_pmd('mean_test')
-%                     obj.xls_write(obj.t.meanPerf(2),obj.testTypes(2),obj.testNames(2),meanParam)
-%             end
-%             
-%             toc
-%             tic
-%             for i = 1:length(obj.lmpThrRange)
-%                     klParam = [0;0]; % dummy
-%                     meanParam = 0; % dummy
-%                     lmpParam = obj.lmpThrRange(i);
-%                     glrParam = 0; % dummy
-%                     obj.t = test(obj.a,obj.n,obj.q,obj.beta,klParam,meanParam,lmpParam,glrParam,obj.pfaIt,obj.pmdIt,obj.mProjIt);
-%                     obj.t.falseAlarm.run_pfa('lmp_test')
-%                     obj.xls_write(obj.t.lmpPerf(1),obj.testTypes(1),obj.testNames(3),lmpParam)
-%                     obj.t.misdetection.run_pmd('lmp_test')
-%                     obj.xls_write(obj.t.lmpPerf(2),obj.testTypes(2),obj.testNames(3),lmpParam)
-%             end
-%             
-%             toc
+            tic
+            for i = 1:length(obj.meanMeanRange)
+                    klParam = [0;0]; % dummy
+                    meanParam = obj.meanMeanRange(i);
+                    lmpParam = 0; % dummy
+                    glrParam = 0; % dummy
+                    obj.t = test(obj.a,obj.n,obj.q,obj.beta,klParam,meanParam,lmpParam,glrParam,obj.pfaIt,obj.pmdIt,obj.mProjIt);
+                    obj.t.falseAlarm.run_pfa('mean_test')
+                    obj.xls_write(obj.t.meanPerf(1),obj.testTypes(1),obj.testNames(2),meanParam)
+                    obj.t.misdetection.run_pmd('mean_test')
+                    obj.xls_write(obj.t.meanPerf(2),obj.testTypes(2),obj.testNames(2),meanParam)
+            end
+            
+            toc
+            tic
+            for i = 1:length(obj.lmpThrRange)
+                    klParam = [0;0]; % dummy
+                    meanParam = 0; % dummy
+                    lmpParam = obj.lmpThrRange(i);
+                    glrParam = 0; % dummy
+                    obj.t = test(obj.a,obj.n,obj.q,obj.beta,klParam,meanParam,lmpParam,glrParam,obj.pfaIt,obj.pmdIt,obj.mProjIt);
+                    obj.t.falseAlarm.run_pfa('lmp_test')
+                    obj.xls_write(obj.t.lmpPerf(1),obj.testTypes(1),obj.testNames(3),lmpParam)
+                    obj.t.misdetection.run_pmd('lmp_test')
+                    obj.xls_write(obj.t.lmpPerf(2),obj.testTypes(2),obj.testNames(3),lmpParam)
+            end
+            
+            toc
 %             tic
 %             for i = 1:length(obj.glrThrRange)
 %                     klParam = [0;0]; % dummy
@@ -125,9 +125,9 @@ classdef repeat < handle
             end
             
             xlswrite(obj.excelFileName,result,char(testName),cellName)
-            result
-%             testName
-%             cellName
+%             result
+            testName
+            cellName
         end
         
     end
