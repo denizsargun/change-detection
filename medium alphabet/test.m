@@ -17,7 +17,8 @@ classdef test < handle
         r % changed distribution
         beta
         eps % allowed error in I-projection
-        iProj % I-projection of 
+        theta % geometric moving average forgetting rate
+        iProj % I-projection of
         mProj % M-projection of \tilde{p}, the empirical dist
         mProjIt
         % mProjLearningRate
@@ -35,7 +36,7 @@ classdef test < handle
     end
     
     methods
-        function obj = test(a,n,q,beta,klParam,meanParam,lmpParam,glrParam,pfaIt,pmdIt,mProjIt)
+        function obj = test(a,n,q,beta,theta,klParam,meanParam,lmpParam,glrParam,pfaIt,pmdIt,mProjIt)
             obj.a = sort(a);
             obj.m = length(obj.a);
             obj.n = n;

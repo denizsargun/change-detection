@@ -52,35 +52,34 @@ classdef repeat < handle
             end
             
             toc
-%             tic
-%             for i = 1:length(obj.lmpThrRange)
-%                     klParam = [0;0]; % dummy
-%                     meanParam = 0; % dummy
-%                     lmpParam = obj.lmpThrRange(i);
-%                     glrParam = 0; % dummy
-%                     obj.t = test(obj.a,obj.n,obj.q,obj.beta,klParam,meanParam,lmpParam,glrParam,obj.pfaIt,obj.pmdIt,obj.mProjIt);
-%                     obj.t.falseAlarm.run_pfa('lmp_test')
-%                     obj.xls_write(obj.t.lmpPerf(1),obj.testTypes(1),obj.testNames(3),lmpParam)
-%                     obj.t.misdetection.run_pmd('lmp_test')
-%                     obj.xls_write(obj.t.lmpPerf(2),obj.testTypes(2),obj.testNames(3),lmpParam)
-%             end
-%             
-%             toc
-%             tic
-%             for i = 1:length(obj.glrThrRange)
-%                     klParam = [0;0]; % dummy
-%                     meanParam = 0; % dummy
-%                     lmpParam = 0; % dummy
-%                     glrParam = obj.glrThrRange(i);
-%                     obj.t = test(obj.a,obj.n,obj.q,obj.beta,klParam,meanParam,lmpParam,glrParam,obj.pfaIt,obj.pmdIt,obj.mProjIt);
-%                     obj.t.falseAlarm.run_pfa('glr_test')
-%                     obj.xls_write(obj.t.glrPerf(1),obj.testTypes(1),obj.testNames(4),glrParam)
-%                     obj.t.misdetection.run_pmd('glr_test')
-%                     obj.xls_write(obj.t.glrPerf(2),obj.testTypes(2),obj.testNames(4),glrParam)
-%             end
-%             
-%             toc
-
+            tic
+            for i = 1:length(obj.lmpThrRange)
+                    klParam = [0;0]; % dummy
+                    meanParam = 0; % dummy
+                    lmpParam = obj.lmpThrRange(i);
+                    glrParam = 0; % dummy
+                    obj.t = test(obj.a,obj.n,obj.q,obj.beta,klParam,meanParam,lmpParam,glrParam,obj.pfaIt,obj.pmdIt,obj.mProjIt);
+                    obj.t.falseAlarm.run_pfa('lmp_test')
+                    obj.xls_write(obj.t.lmpPerf(1),obj.testTypes(1),obj.testNames(3),lmpParam)
+                    obj.t.misdetection.run_pmd('lmp_test')
+                    obj.xls_write(obj.t.lmpPerf(2),obj.testTypes(2),obj.testNames(3),lmpParam)
+            end
+            
+            toc
+            tic
+            for i = 1:length(obj.glrThrRange)
+                    klParam = [0;0]; % dummy
+                    meanParam = 0; % dummy
+                    lmpParam = 0; % dummy
+                    glrParam = obj.glrThrRange(i);
+                    obj.t = test(obj.a,obj.n,obj.q,obj.beta,klParam,meanParam,lmpParam,glrParam,obj.pfaIt,obj.pmdIt,obj.mProjIt);
+                    obj.t.falseAlarm.run_pfa('glr_test')
+                    obj.xls_write(obj.t.glrPerf(1),obj.testTypes(1),obj.testNames(4),glrParam)
+                    obj.t.misdetection.run_pmd('glr_test')
+                    obj.xls_write(obj.t.glrPerf(2),obj.testTypes(2),obj.testNames(4),glrParam)
+            end
+            
+            toc
             obj.xls_stamp()
         end
         

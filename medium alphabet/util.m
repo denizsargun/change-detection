@@ -192,7 +192,13 @@ classdef util < handle
                 numberOfTrials = numberOfTrials+1;
             end
             
-        end        
+        end
+        
+        function geometric_moving_average_empirical_dist(obj,sample)
+            sampleDist = alphabet==sample;
+            obj.gmaDist = obj.theta*obj.gmaDist+sampleDist;
+            obj.gmaDist = obj.gmaDist/sum(obj.gmaDist);
+        end
         
     end
     
