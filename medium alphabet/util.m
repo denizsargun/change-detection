@@ -210,7 +210,6 @@ classdef util < handle
             d = p'*log(p./q);
         end
         
-        
     end
 
 end

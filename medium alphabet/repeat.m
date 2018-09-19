@@ -4,7 +4,7 @@ classdef repeat < handle
         klMeanRange = (-0.57:0.1:0.33)'; % put 10 points for a nice plot
         klRadiusRange = 2.^(-10:1:-2)'; % put 5 points for a nice plot
         meanMeanRange = (-0.57:0.1:0.33)'; % put 10 points for a nice plot
-        lmpThrRange = -2.^[0.5:0.15:2]'; % put 10 points for a nice plot
+        lmpThrRange = -2.^(0.5:0.15:2)'; % put 10 points for a nice plot
         glrThrRange = 2.^(4:0.5:4)'; % put 10 points for a nice plot
         a = [-1 0 1]';
         n = 100;
