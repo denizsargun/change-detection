@@ -29,6 +29,8 @@ classdef experiment < handle
         mProj
         numberOfReps
         performance
+        performanceMean
+        performanceStd
         pfaIt
         pmdIt
         sampleSize
@@ -45,14 +47,14 @@ classdef experiment < handle
             obj.beta = .5;
             obj.cvxFolder = '\\home2.coeit.osu.edu\s\sargun.1\ECE\Desktop\cvx';
             obj.cvxSetupFile = 'cvx_setup.m';
-            obj.glrThrRange = 2.^(4:0.5:4)';
-            obj.klMeanRange = (0.05:0.045:0.5)';
-            obj.klRadiusRange = 2.^(-10:1:-2)';
-            obj.lmpThrRange = -2.^(0.5:0.15:2)';
-            obj.meanMeanRange = (-0.57:0.1:0.33)';
-            obj.numberOfReps = 100;
-            obj.pfaIt = 1e3;
-            obj.pmdIt = 1e3;
+            obj.glrThrRange = 2.^(3:0.5:5)';
+            obj.klMeanRange = (0.05:.09:0.5)';
+            obj.klRadiusRange = 2.^(-10:2:-2)';
+            obj.lmpThrRange = -2.^(0.5:0.3:2)';
+            obj.meanMeanRange = (0:0.1:0.5)';
+            obj.numberOfReps = 10;
+            obj.pfaIt = 1e2;
+            obj.pmdIt = 1e2;
             obj.sampleSize = 20;
             obj.testNames = {'kl', 'mean', 'lmp', 'glr'};
             obj.testTypes = {'pfa', 'pmd'};
@@ -66,6 +68,7 @@ classdef experiment < handle
                 clear(functionName)
             end
             
+            obj.utility.plot()            
         end
         
     end

@@ -27,7 +27,7 @@ classdef utility < handle
             % http://cvxr.com/cvx/download/ (CVX Research Inc.)
             % do the cvx setup only ONCE at the beginning of opening a
             % Matlab command window
-%             run(fullfile(obj.ex.cvxFolder,obj.ex.cvxSetupFile))
+            run(fullfile(obj.ex.cvxFolder,obj.ex.cvxSetupFile))
             %% eps
             obj.ex.eps = min(abs(obj.ex.alphabet-circshift(obj.ex.alphabet,1)))/1e5;
             %% excel file
@@ -43,6 +43,9 @@ classdef utility < handle
             obj.ex.gmaDist = zeros(obj.ex.alphabetSize,1);
             %% set performance
             obj.ex.performance = -inf;
+            obj.ex.performanceMean = containers.Map;
+            % std is normalized by N-1
+            obj.ex.performanceStd = containers.Map;
             %% unchanged dist
             % column vector of dist
             obj.ex.unchangedDist = obj.ex.unchangedDist(:);
@@ -175,7 +178,7 @@ classdef utility < handle
         function write_excel(obj)
             result = obj.ex.performance
             sheet = strcat(obj.ex.testNames{obj.ex.activeTestIndex{1}},'_',obj.ex.testTypes{obj.ex.activeTestIndex{2}})
-            if obj.ex.testNames{obj.ex.activeTestIndex{1}}== 'kl'
+            if strcmp(obj.ex.testNames{obj.ex.activeTestIndex{1}},'kl')
                 % klMean = m, klRadius = r
                 % m(1)r(1), m(1)r(2), ..., m(2)r(1), m(2)r(2), ...
                 add = (obj.ex.activeTestIndex{3}(1)-1)*length(obj.ex.klRadiusRange)+obj.ex.activeTestIndex{3}(2);
@@ -203,7 +206,7 @@ classdef utility < handle
                 repetition = repetition+1;
             else
                 repetition = 1;
-                if obj.ex.testNames{testNameIndex} == 'kl'
+                if strcmp(obj.ex.testNames{testNameIndex},'kl')
                     if parameterIndex(2) < length(obj.ex.klRadiusRange)
                         parameterIndex(2) = parameterIndex(2)+1;
                     else
@@ -218,6 +221,8 @@ classdef utility < handle
                             else
                                 testTypeIndex = 1;
                                 if testNameIndex < length(obj.ex.testNames)
+                                    % other test have 1D parameters
+                                    parameterIndex = 1;
                                     testNameIndex = testNameIndex+1;
                                 else
                                     testNameIndex = 0;
@@ -230,9 +235,20 @@ classdef utility < handle
                     end
                     
                 else
-                    if (testName == 'mean' && parameterIndex < length(obj.ex.meanMeanRange))||...
-                            (testName == 'lmp' && parameterIndex < length(obj.ex.lmpThrRange))||...
-                            (testName == 'glr' && parameterIndex < length(obj.ex.glrThrRange))
+                    % assuming kl test is the first test
+                    flag = 0;
+                    for i = 2:length(obj.ex.testNames)
+                        % assuming mean test is the second test
+                        if i == 2
+                            rangeName = 'meanMeanRange';
+                        else
+                            rangeName = strcat(obj.ex.testNames{obj.ex.activeTestIndex{1}},'ThrRange');
+                        end
+                        
+                        flag = flag|(testNameIndex == i && parameterIndex < length(obj.ex.(rangeName)));
+                    end
+                    
+                    if flag
                         parameterIndex = parameterIndex+1;
                     else
                         % let kl test be the first test
@@ -258,6 +274,44 @@ classdef utility < handle
             
             obj.ex.activeTestIndex = {testNameIndex, testTypeIndex, parameterIndex, repetition};
             obj.ex.performance = -inf;
+        end
+        
+        function read_excel(obj)
+            for i = 1:length(obj.ex.testNames)
+                for j = 1:length(obj.ex.testTypes)
+                    read = xlsread(obj.ex.excelFile,strcat(obj.ex.testNames{i},'_',obj.ex.testTypes{j}));
+                    obj.ex.performanceMean(strcat(obj.ex.testNames{i},'_',obj.ex.testTypes{j})) = mean(read);
+                    obj.ex.performanceStd(strcat(obj.ex.testNames{i},'_',obj.ex.testTypes{j})) = std(read);
+                end
+                
+            end
+            
+        end
+        
+        function plot(obj)
+            figure
+            hold on
+            grid minor
+            for i = 1:length(obj.ex.testNames)
+                pfa = xlsread(obj.ex.excelFile,strcat(obj.ex.testNames{i},'_','pfa'));
+                pmd = xlsread(obj.ex.excelFile,strcat(obj.ex.testNames{i},'_','pmd'));
+                pfaMean = mean(pfa);
+                pfaStd = std(pfa);
+                % define probability of detection
+                pdMean = 1-mean(pmd);
+                pdStd = std(pmd);
+                if strcmp(obj.ex.testNames{i},'kl')
+                    for j = 1:length(obj.ex.klRadiusRange)
+                        jump = length(obj.ex.klMeanRange);
+                        errorbar(pfaMean(j:jump:end),pdMean(j:jump:end),pdStd(j:jump:end),pdStd(j:jump:end),pfaStd(j:jump:end),pfaStd(j:jump:end))
+                    end
+                    
+                else
+                    errorbar(pfaMean,pdMean,pdStd,pdStd,pfaStd,pfaStd)
+                end
+                
+            end
+            
         end
         
         %% change in single string tests
