@@ -14,7 +14,12 @@ classdef utility < handle
             %% initialize test indeces
             % performance is a cell array
             % {test name index, test type index, parameter index/indices, repetition}
-            obj.ex.activeTestIndex = {1, 1, [1; 1], 1};
+            if strcmp(obj.ex.testNames{1},'kl')
+                obj.ex.activeTestIndex = {1, 1, [1; 1], 1};
+            else
+                obj.ex.activeTestIndex = {1, 1, 1, 1};
+            end
+            
             %% alphabet
             % alphabet is a sorted column vector
             obj.ex.alphabet = sort(obj.ex.alphabet(:));
@@ -39,6 +44,18 @@ classdef utility < handle
             obj.ex.excelFile = strcat('experiment','_',dateName,'.xlsx');
             % create excel file
             xlswrite(obj.ex.excelFile,{'create excel file'})
+            xlswrite(obj.ex.excelFile,obj.ex.alphabet,1,'B1')
+            xlswrite(obj.ex.excelFile,obj.ex.beta,1,'C1')
+            xlswrite(obj.ex.excelFile,obj.ex.glrThrRange,1,'D1')
+            xlswrite(obj.ex.excelFile,obj.ex.klMeanRange,1,'E1')
+            xlswrite(obj.ex.excelFile,obj.ex.klRadiusRange,1,'F1')
+            xlswrite(obj.ex.excelFile,obj.ex.lmpThrRange,1,'G1')
+            xlswrite(obj.ex.excelFile,obj.ex.meanMeanRange,1,'H1')
+            xlswrite(obj.ex.excelFile,obj.ex.numberOfReps,1,'I1')
+            xlswrite(obj.ex.excelFile,obj.ex.pfaIt,1,'J1')
+            xlswrite(obj.ex.excelFile,obj.ex.pmdIt,1,'K1')
+            xlswrite(obj.ex.excelFile,obj.ex.sampleSize,1,'L1')
+            xlswrite(obj.ex.excelFile,obj.ex.unchangedDist,1,'M1')
             %% set empirical observation
             obj.ex.gmaDist = zeros(obj.ex.alphabetSize,1);
             %% set performance
@@ -289,10 +306,10 @@ classdef utility < handle
         end
         
         function plot(obj)
-            figure
-            hold on
-            grid minor
             for i = 1:length(obj.ex.testNames)
+                figure
+                hold on
+                grid minor
                 pfa = xlsread(obj.ex.excelFile,strcat(obj.ex.testNames{i},'_','pfa'));
                 pmd = xlsread(obj.ex.excelFile,strcat(obj.ex.testNames{i},'_','pmd'));
                 pfaMean = mean(pfa);
@@ -301,13 +318,29 @@ classdef utility < handle
                 pdMean = 1-mean(pmd);
                 pdStd = std(pmd);
                 if strcmp(obj.ex.testNames{i},'kl')
+                    jump = length(obj.ex.klRadiusRange);
                     for j = 1:length(obj.ex.klRadiusRange)
-                        jump = length(obj.ex.klMeanRange);
-                        errorbar(pfaMean(j:jump:end),pdMean(j:jump:end),pdStd(j:jump:end),pdStd(j:jump:end),pfaStd(j:jump:end),pfaStd(j:jump:end))
+                        x = pfaMean(j:jump:end);
+                        [x order] = sort(x);
+                        y = pdMean(j:jump:end);
+                        y = y(order);
+                        errorX = pfaStd(j:jump:end);
+                        errorX = errorX(order);
+                        errorY = pdStd(j:jump:end);
+                        errorY = errorY(order);
+                        errorbar(x,y,errorY,errorY,errorX,errorX)
                     end
                     
                 else
-                    errorbar(pfaMean,pdMean,pdStd,pdStd,pfaStd,pfaStd)
+                    x = pfaMean;
+                    [x order] = sort(x);
+                    y = pdMean;
+                    y = y(order);
+                    errorX = pfaStd;
+                    errorX = errorX(order);
+                    errorY = pdStd;
+                    errorY = errorY(order);
+                    errorbar(x,y,errorY,errorY,errorX,errorX)
                 end
                 
             end
@@ -360,45 +393,45 @@ classdef utility < handle
         function kl_pfa(obj)
             % probability of false alarm for the KL divergence test
             numberOfFalseAlarms = 0;
-            for i = 1:obj.ex.pfaIt
+            for i = 1:obj.ex.pfaIt(1)
                 dist = obj.realize(obj.ex.unchangedDist);
                 numberOfFalseAlarms = numberOfFalseAlarms+obj.kl_is_change(dist);
             end
             
-            obj.ex.performance = numberOfFalseAlarms/obj.ex.pfaIt;
+            obj.ex.performance = numberOfFalseAlarms/obj.ex.pfaIt(1);
             obj.write_excel()
         end
         
         function mean_pfa(obj)
             numberOfFalseAlarms = 0;
-            for i = 1:obj.ex.pfaIt
+            for i = 1:obj.ex.pfaIt(2)
                 dist = obj.realize(obj.ex.unchangedDist);
                 numberOfFalseAlarms = numberOfFalseAlarms+obj.mean_is_change(dist);
             end
             
-            obj.ex.performance = numberOfFalseAlarms/obj.ex.pfaIt;
+            obj.ex.performance = numberOfFalseAlarms/obj.ex.pfaIt(2);
             obj.write_excel()
         end
         
         function lmp_pfa(obj)
             numberOfFalseAlarms = 0;
-            for i = 1:obj.ex.pfaIt
+            for i = 1:obj.ex.pfaIt(3)
                 dist = obj.realize(obj.ex.unchangedDist);
                 numberOfFalseAlarms = numberOfFalseAlarms+obj.lmp_is_change(dist);
             end
             
-            obj.ex.performance = numberOfFalseAlarms/obj.ex.pfaIt;
+            obj.ex.performance = numberOfFalseAlarms/obj.ex.pfaIt(3);
             obj.write_excel()
         end
         
         function glr_pfa(obj)
             numberOfFalseAlarms = 0;
-            for i = 1:obj.ex.pfaIt
+            for i = 1:obj.ex.pfaIt(4)
                 dist = obj.realize(obj.ex.unchangedDist);
                 numberOfFalseAlarms = numberOfFalseAlarms+obj.glr_is_change(dist);
             end
             
-            obj.ex.performance = numberOfFalseAlarms/obj.ex.pfaIt;
+            obj.ex.performance = numberOfFalseAlarms/obj.ex.pfaIt(4);
             obj.write_excel()
         end
         
@@ -406,49 +439,49 @@ classdef utility < handle
         function kl_pmd(obj)
             % probability of misdetection for the KL divergence test
             numberOfMisdetections = 0;
-            for i = 1:obj.ex.pmdIt
+            for i = 1:obj.ex.pmdIt(1)
                 empDist = obj.realize(obj.ex.changedDist);
                 numberOfMisdetections = numberOfMisdetections+(1-obj.kl_is_change(empDist));
                 obj.ex.changedDist = obj.random_dist_mean(obj.ex.beta);
             end
             
-            obj.ex.performance = numberOfMisdetections/obj.ex.pmdIt;
+            obj.ex.performance = numberOfMisdetections/obj.ex.pmdIt(1);
             obj.write_excel()
         end
 
         function mean_pmd(obj)
             numberOfMisdetections = 0;
-            for i = 1:obj.ex.pmdIt
+            for i = 1:obj.ex.pmdIt(2)
                 obj.ex.changedDist = obj.random_dist_mean(obj.ex.beta);
                 empDist = obj.realize(obj.ex.changedDist);
                 numberOfMisdetections = numberOfMisdetections+(1-obj.mean_is_change(empDist));
             end
             
-            obj.ex.performance = numberOfMisdetections/obj.ex.pmdIt;
+            obj.ex.performance = numberOfMisdetections/obj.ex.pmdIt(2);
             obj.write_excel()
         end
         
         function lmp_pmd(obj)
             numberOfMisdetections = 0;
-            for i = 1:obj.ex.pmdIt
+            for i = 1:obj.ex.pmdIt(3)
                 obj.ex.changedDist = obj.random_dist_mean(obj.ex.beta);
                 empDist = obj.realize(obj.ex.changedDist);
                 numberOfMisdetections = numberOfMisdetections+(1-obj.lmp_is_change(empDist));
             end
             
-            obj.ex.performance = numberOfMisdetections/obj.ex.pmdIt;
+            obj.ex.performance = numberOfMisdetections/obj.ex.pmdIt(3);
             obj.write_excel()
         end
         
         function glr_pmd(obj)
             numberOfMisdetections = 0;
-            for i = 1:obj.ex.pmdIt
+            for i = 1:obj.ex.pmdIt(4)
                 obj.ex.changedDist = obj.random_dist_mean(obj.ex.beta);
                 empDist = obj.realize(obj.ex.changedDist);
                 numberOfMisdetections = numberOfMisdetections+(1-obj.glr_is_change(empDist));
             end
             
-            obj.ex.performance = numberOfMisdetections/obj.ex.pmdIt;
+            obj.ex.performance = numberOfMisdetections/obj.ex.pmdIt(4);
             obj.write_excel()
         end
         

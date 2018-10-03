@@ -13,18 +13,13 @@ classdef experiment < handle
         cvxSetupFile
         eps
         excelFile
-        glrThr
         glrThrRange
         gmaDist
         iProj
-        klMean
         klMeanRange
-        klRadius
         klRadiusRange
         lmpDir
-        lmpThr
         lmpThrRange
-        meanMean
         meanMeanRange
         mProj
         numberOfReps
@@ -43,18 +38,19 @@ classdef experiment < handle
     
     methods
         function obj = experiment()
+            tic
             obj.alphabet = [-2 -1 0 1 2];
             obj.beta = .5;
             obj.cvxFolder = '\\home2.coeit.osu.edu\s\sargun.1\ECE\Desktop\cvx';
             obj.cvxSetupFile = 'cvx_setup.m';
             obj.glrThrRange = 2.^(3:0.5:5)';
-            obj.klMeanRange = (0.05:.09:0.5)';
-            obj.klRadiusRange = 2.^(-10:2:-2)';
-            obj.lmpThrRange = -2.^(0.5:0.3:2)';
-            obj.meanMeanRange = (0:0.1:0.5)';
-            obj.numberOfReps = 10;
-            obj.pfaIt = 1e2;
-            obj.pmdIt = 1e2;
+            obj.klMeanRange = (0.05:.05:0.5)';
+            obj.klRadiusRange = 2.^(-10:1:-2)';
+            obj.lmpThrRange = -2.^(0.5:.15:2)';
+            obj.meanMeanRange = (0:0.05:0.5)';
+            obj.numberOfReps = 200;
+            obj.pfaIt = [1e2; 1e2; 1e2; 10];
+            obj.pmdIt = [1e2; 1e2; 1e2; 10];
             obj.sampleSize = 20;
             obj.testNames = {'kl', 'mean', 'lmp', 'glr'};
             obj.testTypes = {'pfa', 'pmd'};
@@ -68,7 +64,8 @@ classdef experiment < handle
                 clear(functionName)
             end
             
-            obj.utility.plot()            
+            obj.utility.plot()
+            toc
         end
         
     end
