@@ -112,6 +112,8 @@ classdef utility < handle
             % 3. if mean(dist)>= mean, dist is optimal
             % to use cvx matlab package run cvx_setup.m
             cvx_begin quiet
+            % DECEREASED THE PRECISION FOR TIME PURPOSES!!!
+            cvx_precision low
             variable proj(obj.ex.alphabetSize)
             proj >= 0;
             sum(proj) == 1;

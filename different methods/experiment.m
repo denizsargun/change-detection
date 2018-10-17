@@ -43,11 +43,11 @@ classdef experiment < handle
             obj.beta = .5;
             obj.cvxFolder = '\\home2.coeit.osu.edu\s\sargun.1\ECE\Desktop\cvx';
             obj.cvxSetupFile = 'cvx_setup.m';
-            obj.glrThrRange = 2.^(3:0.5:5)';
+            obj.glrThrRange = 2.^(2:0.25:6)';
             obj.klMeanRange = (0.05:.05:0.5)';
             obj.klRadiusRange = 2.^(-10:1:-2)';
-            obj.lmpThrRange = -2.^(0.5:.)';15:2
-            obj.meanMeanRange = (0:0.05:0.5)';
+            obj.lmpThrRange = -2.^(0.5:.15:2)';
+            obj.meanMeanRange = (0:.05:0.5)';
             obj.numberOfReps = 200;
             obj.pfaIt = [1e2; 1e2; 1e2; 10];
             obj.pmdIt = [1e2; 1e2; 1e2; 10];
