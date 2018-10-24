@@ -1,5 +1,19 @@
 classdef utility < handle
     % utility toolbox
+    %% dictionary
+    % arl       = average run length
+    % dist      = distribution
+    % emp       = empirical
+    % ex        = experiment
+    % glr       = generalized likelihood ratio
+    % i proj    = information projection
+    % kl        = Kullback Leibler
+    % lmp       = locally most powerful
+    % m proj    = moment projection
+    % pfa       = probability of false alarm
+    % pmd       = probability of misdetection
+    % wcdd      = worst case detection delay
+    %%
     properties
         ex
     end
@@ -56,6 +70,7 @@ classdef utility < handle
             xlswrite(obj.ex.excelFile,obj.ex.pmdIt,1,'K1')
             xlswrite(obj.ex.excelFile,obj.ex.sampleSize,1,'L1')
             xlswrite(obj.ex.excelFile,obj.ex.unchangedDist,1,'M1')
+            xlswrite(obj.ex.excelFile,obj.ex.cvxPrecision,1,'N1')
             %% set empirical observation
             obj.ex.gmaDist = zeros(obj.ex.alphabetSize,1);
             %% set performance
@@ -113,7 +128,7 @@ classdef utility < handle
             % to use cvx matlab package run cvx_setup.m
             cvx_begin quiet
             % DECEREASED THE PRECISION FOR TIME PURPOSES!!!
-            cvx_precision low
+            cvx_precision(obj.ex.cvxPrecision)
             variable proj(obj.ex.alphabetSize)
             proj >= 0;
             sum(proj) == 1;
@@ -485,6 +500,24 @@ classdef utility < handle
             
             obj.ex.performance = numberOfMisdetections/obj.ex.pmdIt(4);
             obj.write_excel()
+        end
+        
+        %% time series
+        function unchangedSeries = unchanged_series(obj)
+            seed = rand(1,obj.ex.stringLength);
+            seedRep = ones(obj.ex.alphabetSize,1)*seed;
+            cumSum = cumsum(obj.ex.unchangedDist);
+            cumSumRep = cumSum*ones(1,obj.ex.stringLength);
+            seriesIndex = sum(seedRep<cumSumRep,1);
+            unchangedSeries = obj.ex.alphabet(seriesIndex);
+        end
+        
+        function movingAverage = moving_average(series)
+            movingAverage = tsmovavg(series,'s',obj.ex.sampleSize);
+        end
+        
+        function mean_arl(obj)
+            
         end
         
     end
