@@ -52,9 +52,13 @@ classdef utility < handle
             %% excel file
             date = clock;
             date(6) = round(date(6));
-            dateName = mat2str(date);
-            dateName = dateName(2:end-1);
-            dateName = strrep(dateName,' ','_');
+            singleDigit = find(date < 10);
+            dateString = string(date);
+            for i = singleDigit(1:end)
+                dateString(i) = insertBefore(dateString(i),1,'0');
+            end
+            
+            dateName = strjoin(dateString,'_');
             obj.ex.excelFile = strcat('experiment','_',dateName,'.xlsx');
             % create excel file
             xlswrite(obj.ex.excelFile,{'create excel file'})

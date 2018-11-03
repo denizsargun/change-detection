@@ -233,7 +233,7 @@ classdef utility < handle
             cell = char(cellLetters+string(cellNumber))
             xlswrite(obj.ex.excelFile,result,performaceSheet,cell)
             xlswrite(obj.ex.excelFile,time,timeSheet,cell)
-            xlswrite(obj.ex.excelFile,mtbf,mtbfSheet,cell)
+%             xlswrite(obj.ex.excelFile,mtbf,mtbfSheet,cell)
             obj.next()
         end
         
