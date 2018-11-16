@@ -46,7 +46,10 @@ classdef utility < handle
             % http://cvxr.com/cvx/download/ (CVX Research Inc.)
             % do the cvx setup only ONCE at the beginning of opening a
             % Matlab command window
+            % for Windows
             run(fullfile(obj.ex.cvxFolder,obj.ex.cvxSetupFile))
+            % for Ubuntu:
+            % run('/usr/local/MATLAB/cvx-1.22/cvx/cvx_setup.m')
             %% eps
             obj.ex.eps = min(abs(obj.ex.alphabet-circshift(obj.ex.alphabet,1)))/1e5;
             %% excel file
@@ -125,17 +128,40 @@ classdef utility < handle
             % ie. if dist was a finite sequence of nonnegative numbers,
             % unnormalized
             % 3. if mean(dist)>= mean, dist is optimal
-            % to use cvx matlab package run cvx_setup.m
-            cvx_begin quiet
-            % DECEREASED THE PRECISION FOR TIME PURPOSES!!!
-            cvx_precision(obj.ex.cvxPrecision)
-            variable proj(obj.ex.alphabetSize)
-            proj >= 0;
-            sum(proj) == 1;
-            obj.ex.alphabet'*proj >= mean;
-            minimize(-dist'*log(proj))
-            cvx_end
-            obj.ex.mProj = proj;
+            
+%             % use cvx matlab package run cvx_setup.m
+%             cvx_begin quiet
+%             % DECEREASED THE PRECISION FOR TIME PURPOSES!!!
+%             cvx_precision(obj.ex.cvxPrecision)
+%             variable proj(obj.ex.alphabetSize)
+%             proj >= 0;
+%             sum(proj) == 1;
+%             obj.ex.alphabet'*proj >= mean;
+%             minimize(-dist'*log(proj))
+%             cvx_end
+%             obj.ex.mProj = proj;
+            
+            % use fmincon
+            if obj.mean(dist) >= mean
+                obj.ex.mProj = dist;
+            else
+                % if mean(dist) < mean, then mean(projection) = mean
+                fun = @(x) dist'*log(1./x);
+                % initializing
+                wmin = (alphabet(end)-beta)/(alphabet(end)-alphabet(1));
+                x0 = wmin;
+                x0(obj.ex.alphabetSize) = 1-wmin;
+                x0 = x0';
+                % dummy inequality constraints
+                A = zeros(1,obj.ex.alphabetSize);
+                b = 0;
+                % equality constraints for normalization and mean
+                Aeq = [ones(1,obj.ex.alphabetSize); obj.ex.alphabet'];
+                beq = [1; mean];
+                % lower and upper bounds for proj
+                lb = zeros(obj.ex.alphabetSize,1);
+                ub = ones(obj.ex.alphabetSize,1);
+                obj.ex.mProj = fmincon(fun,x0,A,b,Aeq,beq,lb,ub);
         end
         
         function p = emp_prob_calc(obj,dist,emp_dist)

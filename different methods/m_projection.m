@@ -1,7 +1,13 @@
-function q = m_projection()
 % given alphabet (size m), M-project distribution p on to
 % the set of distributions with mean >= beta using KKT conditions
 % for the convex problem q^*=argmin_{Eq >= beta} D(p||q)
+
+% example inputs
+alphabet = -2:2';
+beta = .5;
+p = [.3 .2 .1 .25 .15]';
+
+% start dual
 lambda = zeros(m+1,1); % Lagrangian multipliers corresponding to p >= 0 and mean constraint
 nu = 1; % Lagrangian multiplier corresponding to sum(p) = 1
 q = zeros(m,1);
@@ -22,6 +28,4 @@ else %alphabet'*p=beta
         error = (sum(q)-1)^2+(alphabet'*q-beta)^2;
     end
     
-end
-
 end
