@@ -13,7 +13,7 @@ classdef experiment < handle
         cvxPrecision
         cvxSetupFile
         eps
-        excelFile
+        storageFile
         glrThrRange
         gmaDist
         iProj
@@ -31,6 +31,7 @@ classdef experiment < handle
         pfaIt
         pmdIt
         sampleSize
+        storageType
         stringLength
         testNames
         testTime % tic-toc holder
@@ -63,6 +64,7 @@ classdef experiment < handle
             obj.pmdIt = [1e2; 1e2; 1e2; 10];
             obj.sampleSize = 20;
             obj.stringLength = 1e6;
+            obj.storageType = 'csv';
             obj.testNames = {'kl', 'mean', 'lmp', 'glr'};
             obj.testTypes = {'pfa', 'pmd'};
             obj.theta = 0; % not used

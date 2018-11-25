@@ -52,28 +52,51 @@ classdef utility < handle
             % run('/usr/local/MATLAB/cvx-1.22/cvx/cvx_setup.m')
             %% eps
             obj.ex.eps = min(abs(obj.ex.alphabet-circshift(obj.ex.alphabet,1)))/1e5;
-            %% excel file
+            
+            %% excel or csv file
             date = clock;
             date(6) = round(date(6));
             dateName = mat2str(date);
             dateName = dateName(2:end-1);
             dateName = strrep(dateName,' ','_');
-            obj.ex.excelFile = strcat('experiment','_',dateName,'.xlsx');
-            % create excel file
-            xlswrite(obj.ex.excelFile,{'create excel file'})
-            xlswrite(obj.ex.excelFile,obj.ex.alphabet,1,'B1')
-            xlswrite(obj.ex.excelFile,obj.ex.beta,1,'C1')
-            xlswrite(obj.ex.excelFile,obj.ex.glrThrRange,1,'D1')
-            xlswrite(obj.ex.excelFile,obj.ex.klMeanRange,1,'E1')
-            xlswrite(obj.ex.excelFile,obj.ex.klRadiusRange,1,'F1')
-            xlswrite(obj.ex.excelFile,obj.ex.lmpThrRange,1,'G1')
-            xlswrite(obj.ex.excelFile,obj.ex.meanMeanRange,1,'H1')
-            xlswrite(obj.ex.excelFile,obj.ex.numberOfReps,1,'I1')
-            xlswrite(obj.ex.excelFile,obj.ex.pfaIt,1,'J1')
-            xlswrite(obj.ex.excelFile,obj.ex.pmdIt,1,'K1')
-            xlswrite(obj.ex.excelFile,obj.ex.sampleSize,1,'L1')
-            xlswrite(obj.ex.excelFile,obj.ex.unchangedDist,1,'M1')
-            xlswrite(obj.ex.excelFile,obj.ex.cvxPrecision,1,'N1')
+            if obj.ex.storageType = 'xlsx'
+                % excel file
+                obj.ex.storageFile = strcat('experiment','_',dateName,'.xlsx');
+                % create excel file
+                xlswrite(obj.ex.storageFile,{'create excel file'})
+                xlswrite(obj.ex.storageFile,obj.ex.alphabet,1,'B1')
+                xlswrite(obj.ex.storageFile,obj.ex.beta,1,'C1')
+                xlswrite(obj.ex.storageFile,obj.ex.glrThrRange,1,'D1')
+                xlswrite(obj.ex.storageFile,obj.ex.klMeanRange,1,'E1')
+                xlswrite(obj.ex.storageFile,obj.ex.klRadiusRange,1,'F1')
+                xlswrite(obj.ex.storageFile,obj.ex.lmpThrRange,1,'G1')
+                xlswrite(obj.ex.storageFile,obj.ex.meanMeanRange,1,'H1')
+                xlswrite(obj.ex.storageFile,obj.ex.numberOfReps,1,'I1')
+                xlswrite(obj.ex.storageFile,obj.ex.pfaIt,1,'J1')
+                xlswrite(obj.ex.storageFile,obj.ex.pmdIt,1,'K1')
+                xlswrite(obj.ex.storageFile,obj.ex.sampleSize,1,'L1')
+                xlswrite(obj.ex.storageFile,obj.ex.unchangedDist,1,'M1')
+                xlswrite(obj.ex.storageFile,obj.ex.cvxPrecision,1,'N1')
+            elseif obj.ex.storageType = 'csv'
+                % excel file
+                obj.ex.storageFile = strcat('experiment','_',dateName,'.csv');
+                % create excel file
+                csvwrite(obj.ex.storageFile,{'create excel file'})
+                csvwrite(obj.ex.storageFile,obj.ex.alphabet,'B1')
+                csvwrite(obj.ex.storageFile,obj.ex.beta,'C1')
+                csvwrite(obj.ex.storageFile,obj.ex.glrThrRange,'D1')
+                csvwrite(obj.ex.storageFile,obj.ex.klMeanRange,'E1')
+                csvwrite(obj.ex.storageFile,obj.ex.klRadiusRange,'F1')
+                csvwrite(obj.ex.storageFile,obj.ex.lmpThrRange,'G1')
+                csvwrite(obj.ex.storageFile,obj.ex.meanMeanRange,'H1')
+                csvwrite(obj.ex.storageFile,obj.ex.numberOfReps,'I1')
+                csvwrite(obj.ex.storageFile,obj.ex.pfaIt,'J1')
+                csvwrite(obj.ex.storageFile,obj.ex.pmdIt,'K1')
+                csvwrite(obj.ex.storageFile,obj.ex.sampleSize,'L1')
+                csvwrite(obj.ex.storageFile,obj.ex.unchangedDist,'M1')
+                csvwrite(obj.ex.storageFile,obj.ex.cvxPrecision,'N1')
+            end
+            
             %% set empirical observation
             obj.ex.gmaDist = zeros(obj.ex.alphabetSize,1);
             %% set performance
@@ -257,9 +280,9 @@ classdef utility < handle
             cellLetters = char(v);
             cellNumber = obj.ex.activeTestIndex{4};
             cell = char(cellLetters+string(cellNumber))
-            xlswrite(obj.ex.excelFile,result,performaceSheet,cell)
-            xlswrite(obj.ex.excelFile,time,timeSheet,cell)
-%             xlswrite(obj.ex.excelFile,mtbf,mtbfSheet,cell)
+            xlswrite(obj.ex.storageFile,result,performaceSheet,cell)
+            xlswrite(obj.ex.storageFile,time,timeSheet,cell)
+%             xlswrite(obj.ex.storageFile,mtbf,mtbfSheet,cell)
             obj.next()
         end
         
@@ -345,7 +368,7 @@ classdef utility < handle
         function read_excel(obj)
             for i = 1:length(obj.ex.testNames)
                 for j = 1:length(obj.ex.testTypes)
-                    read = xlsread(obj.ex.excelFile,strcat(obj.ex.testNames{i},'_',obj.ex.testTypes{j}));
+                    read = xlsread(obj.ex.storageFile,strcat(obj.ex.testNames{i},'_',obj.ex.testTypes{j}));
                     obj.ex.performanceMean(strcat(obj.ex.testNames{i},'_',obj.ex.testTypes{j})) = mean(read);
                     obj.ex.performanceStd(strcat(obj.ex.testNames{i},'_',obj.ex.testTypes{j})) = std(read);
                 end
@@ -359,8 +382,8 @@ classdef utility < handle
                 figure
                 hold on
                 grid minor
-                pfa = xlsread(obj.ex.excelFile,strcat(obj.ex.testNames{i},'_','pfa'));
-                pmd = xlsread(obj.ex.excelFile,strcat(obj.ex.testNames{i},'_','pmd'));
+                pfa = xlsread(obj.ex.storageFile,strcat(obj.ex.testNames{i},'_','pfa'));
+                pmd = xlsread(obj.ex.storageFile,strcat(obj.ex.testNames{i},'_','pmd'));
                 pfaMean = mean(pfa);
                 pfaStd = std(pfa);
                 % define probability of detection
