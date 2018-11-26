@@ -47,33 +47,37 @@ classdef utility < handle
             % do the cvx setup only ONCE at the beginning of opening a
             % Matlab command window
             % for Windows
-            run(fullfile(obj.ex.cvxFolder,obj.ex.cvxSetupFile))
+            % run(fullfile(obj.ex.cvxFolder,obj.ex.cvxSetupFile))
             % for Ubuntu:
             % run('/usr/local/MATLAB/cvx-1.22/cvx/cvx_setup.m')
             %% eps
             obj.ex.eps = min(abs(obj.ex.alphabet-circshift(obj.ex.alphabet,1)))/1e5;
-            %% excel file
+            
+            %% excel or csv file
             date = clock;
             date(6) = round(date(6));
             dateName = mat2str(date);
             dateName = dateName(2:end-1);
             dateName = strrep(dateName,' ','_');
-            obj.ex.excelFile = strcat('experiment','_',dateName,'.xlsx');
+            % excel file
+            obj.ex.storageFile = strcat('experiment','_',dateName,'.xlsx');
             % create excel file
-            xlswrite(obj.ex.excelFile,{'create excel file'})
-            xlswrite(obj.ex.excelFile,obj.ex.alphabet,1,'B1')
-            xlswrite(obj.ex.excelFile,obj.ex.beta,1,'C1')
-            xlswrite(obj.ex.excelFile,obj.ex.glrThrRange,1,'D1')
-            xlswrite(obj.ex.excelFile,obj.ex.klMeanRange,1,'E1')
-            xlswrite(obj.ex.excelFile,obj.ex.klRadiusRange,1,'F1')
-            xlswrite(obj.ex.excelFile,obj.ex.lmpThrRange,1,'G1')
-            xlswrite(obj.ex.excelFile,obj.ex.meanMeanRange,1,'H1')
-            xlswrite(obj.ex.excelFile,obj.ex.numberOfReps,1,'I1')
-            xlswrite(obj.ex.excelFile,obj.ex.pfaIt,1,'J1')
-            xlswrite(obj.ex.excelFile,obj.ex.pmdIt,1,'K1')
-            xlswrite(obj.ex.excelFile,obj.ex.sampleSize,1,'L1')
-            xlswrite(obj.ex.excelFile,obj.ex.unchangedDist,1,'M1')
-            xlswrite(obj.ex.excelFile,obj.ex.cvxPrecision,1,'N1')
+            % use xlwrite insted of xlswrite
+            xlwrite(obj.ex.storageFile,{'create excel file'});
+            xlwrite(obj.ex.storageFile,obj.ex.alphabet,1,'B1');
+            xlwrite(obj.ex.storageFile,obj.ex.beta,1,'C1');
+            xlwrite(obj.ex.storageFile,obj.ex.glrThrRange,1,'D1');
+            xlwrite(obj.ex.storageFile,obj.ex.klMeanRange,1,'E1');
+            xlwrite(obj.ex.storageFile,obj.ex.klRadiusRange,1,'F1');
+            xlwrite(obj.ex.storageFile,obj.ex.lmpThrRange,1,'G1');
+            xlwrite(obj.ex.storageFile,obj.ex.meanMeanRange,1,'H1');
+            xlwrite(obj.ex.storageFile,obj.ex.numberOfReps,1,'I1');
+            xlwrite(obj.ex.storageFile,obj.ex.pfaIt,1,'J1');
+            xlwrite(obj.ex.storageFile,obj.ex.pmdIt,1,'K1');
+            xlwrite(obj.ex.storageFile,obj.ex.sampleSize,1,'L1');
+            xlwrite(obj.ex.storageFile,obj.ex.unchangedDist,1,'M1');
+            xlwrite(obj.ex.storageFile,obj.ex.cvxPrecision,1,'N1');
+            
             %% set empirical observation
             obj.ex.gmaDist = zeros(obj.ex.alphabetSize,1);
             %% set performance
@@ -118,7 +122,7 @@ classdef utility < handle
             end
             
         end
-
+        
         function m_proj(obj,dist,mean)
             % find M-projection of dist over set
             % of distributions with mean(dist)>= mean
@@ -129,17 +133,17 @@ classdef utility < handle
             % unnormalized
             % 3. if mean(dist)>= mean, dist is optimal
             
-%             % use cvx matlab package run cvx_setup.m
-%             cvx_begin quiet
-%             % DECEREASED THE PRECISION FOR TIME PURPOSES!!!
-%             cvx_precision(obj.ex.cvxPrecision)
-%             variable proj(obj.ex.alphabetSize)
-%             proj >= 0;
-%             sum(proj) == 1;
-%             obj.ex.alphabet'*proj >= mean;
-%             minimize(-dist'*log(proj))
-%             cvx_end
-%             obj.ex.mProj = proj;
+            %             % use cvx matlab package run cvx_setup.m
+            %             cvx_begin quiet
+            %             % DECEREASED THE PRECISION FOR TIME PURPOSES!!!
+            %             cvx_precision(obj.ex.cvxPrecision)
+            %             variable proj(obj.ex.alphabetSize)
+            %             proj >= 0;
+            %             sum(proj) == 1;
+            %             obj.ex.alphabet'*proj >= mean;
+            %             minimize(-dist'*log(proj))
+            %             cvx_end
+            %             obj.ex.mProj = proj;
             
             % use fmincon
             if obj.mean(dist) >= mean
@@ -162,6 +166,8 @@ classdef utility < handle
                 lb = zeros(obj.ex.alphabetSize,1);
                 ub = ones(obj.ex.alphabetSize,1);
                 obj.ex.mProj = fmincon(fun,x0,A,b,Aeq,beq,lb,ub);
+            end
+            
         end
         
         function p = emp_prob_calc(obj,dist,emp_dist)
@@ -174,7 +180,7 @@ classdef utility < handle
                 % debugging rounding error by round()
                 d2(round(d3(i))+1:round(d3(i+1))) = 1:round(obj.ex.sampleSize*emp_dist(i));
             end
-    
+            
             % multinomial coefficient
             p = prod((1:obj.ex.sampleSize)'./d2);
             p = p*prod(dist.^(obj.ex.sampleSize*emp_dist));
@@ -257,9 +263,9 @@ classdef utility < handle
             cellLetters = char(v);
             cellNumber = obj.ex.activeTestIndex{4};
             cell = char(cellLetters+string(cellNumber))
-            xlswrite(obj.ex.excelFile,result,performaceSheet,cell)
-            xlswrite(obj.ex.excelFile,time,timeSheet,cell)
-%             xlswrite(obj.ex.excelFile,mtbf,mtbfSheet,cell)
+            xlwrite(obj.ex.storageFile,result,performaceSheet,cell);
+            xlwrite(obj.ex.storageFile,time,timeSheet,cell);
+            %             xlwrite(obj.ex.storageFile,mtbf,mtbfSheet,cell);
             obj.next()
         end
         
@@ -322,14 +328,14 @@ classdef utility < handle
                         parameterIndex = 1;
                         if testTypeIndex < length(obj.ex.testTypes)
                             testTypeIndex = testTypeIndex+1;
+                        else
+                            testTypeIndex = 1;
+                            if testNameIndex < length(obj.ex.testNames)
+                                testNameIndex = testNameIndex+1;
                             else
-                                testTypeIndex = 1;
-                                if testNameIndex < length(obj.ex.testNames)
-                                    testNameIndex = testNameIndex+1;
-                                else
-                                    testNameIndex = 0;
-                                end
-                                
+                                testNameIndex = 0;
+                            end
+                            
                         end
                         
                     end
@@ -345,7 +351,7 @@ classdef utility < handle
         function read_excel(obj)
             for i = 1:length(obj.ex.testNames)
                 for j = 1:length(obj.ex.testTypes)
-                    read = xlsread(obj.ex.excelFile,strcat(obj.ex.testNames{i},'_',obj.ex.testTypes{j}));
+                    read = xlsread(obj.ex.storageFile,strcat(obj.ex.testNames{i},'_',obj.ex.testTypes{j}));
                     obj.ex.performanceMean(strcat(obj.ex.testNames{i},'_',obj.ex.testTypes{j})) = mean(read);
                     obj.ex.performanceStd(strcat(obj.ex.testNames{i},'_',obj.ex.testTypes{j})) = std(read);
                 end
@@ -359,8 +365,8 @@ classdef utility < handle
                 figure
                 hold on
                 grid minor
-                pfa = xlsread(obj.ex.excelFile,strcat(obj.ex.testNames{i},'_','pfa'));
-                pmd = xlsread(obj.ex.excelFile,strcat(obj.ex.testNames{i},'_','pmd'));
+                pfa = xlsread(obj.ex.storageFile,strcat(obj.ex.testNames{i},'_','pfa'));
+                pmd = xlsread(obj.ex.storageFile,strcat(obj.ex.testNames{i},'_','pmd'));
                 pfaMean = mean(pfa);
                 pfaStd = std(pfa);
                 % define probability of detection
@@ -507,7 +513,7 @@ classdef utility < handle
             obj.ex.performance = numberOfMisdetections/obj.ex.pmdIt(1);
             obj.write_excel()
         end
-
+        
         function mean_pmd(obj)
             numberOfMisdetections = 0;
             testTimeTemp = tic;
