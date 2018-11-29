@@ -60,7 +60,7 @@ classdef utility < handle
             dateName = dateName(2:end-1);
             dateName = strrep(dateName,' ','_');
             % excel file
-            obj.ex.storageFile = strcat('experiment','_',dateName,'.xlsx');
+            obj.ex.storageFile = strcat('experiment','_',dateName,'.xls'); % use .xls insted of .xlsx
             % create excel file
             % use xlwrite insted of xlswrite
             xlwrite(obj.ex.storageFile,{'create excel file'});
