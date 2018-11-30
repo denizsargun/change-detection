@@ -1,6 +1,8 @@
 classdef utility < handle
+    
     % utility toolbox
-    %% dictionary
+    
+    % dictionary
     % dist      = distribution
     % emp       = empirical
     % ex        = experiment
@@ -13,7 +15,7 @@ classdef utility < handle
     % pfa       = probability of false alarm
     % pmd       = probability of misdetection
     % wcdd      = worst case detection delay
-    %%
+    
     properties
         ex
     end
@@ -23,26 +25,27 @@ classdef utility < handle
             obj.ex = experiment;
         end
         
-        %% setup
+        % initialize
         function setup(obj)
-            %% initialize test indeces
-            % performance is a cell array
-            % {test name index, test type index, parameter index/indices, repetition}
+            % active test index
+            % cell array: {test name index, test type index, ...
+            %   parameter index/indices, repetition}
             if strcmp(obj.ex.testNames{1},'kl')
                 obj.ex.activeTestIndex = {1, 1, [1; 1], 1};
             else
                 obj.ex.activeTestIndex = {1, 1, 1, 1};
             end
             
-            %% alphabet
+            % alphabet
             % alphabet is a sorted column vector
             obj.ex.alphabet = sort(obj.ex.alphabet(:));
             obj.ex.alpha = obj.mean(obj.ex.unchangedDist);
             obj.ex.alphabetSize = length(obj.ex.alphabet);
-            %% set changed dist with mean >= beta
+            
+            % initialize changed dist with mean >= beta
             obj.ex.changedDist = obj.random_dist_mean(obj.ex.beta);
-            %% cvx
-            % setup cvx
+            
+            % cvx
             % http://cvxr.com/cvx/download/ (CVX Research Inc.)
             % do the cvx setup only ONCE at the beginning of opening a
             % Matlab command window
@@ -50,17 +53,25 @@ classdef utility < handle
             % run(fullfile(obj.ex.cvxFolder,obj.ex.cvxSetupFile))
             % for Ubuntu:
             % run('/usr/local/MATLAB/cvx-1.22/cvx/cvx_setup.m')
-            %% eps
-            obj.ex.eps = min(abs(obj.ex.alphabet-circshift(obj.ex.alphabet,1)))/1e5;
             
-            %% excel or csv file
+            % eps
+            obj.ex.eps = min(abs(obj.ex.alphabet- ...
+                circshift(obj.ex.alphabet,1)))/1e5;
+            
+            % excel file
             date = clock;
             date(6) = round(date(6));
             dateName = mat2str(date);
             dateName = dateName(2:end-1);
             dateName = strrep(dateName,' ','_');
-            % excel file
-            obj.ex.storageFile = strcat('experiment','_',dateName,'.xls'); % use .xls insted of .xlsx
+            % try .xls or .xlsx
+            obj.ex.storageFile = strcat('experiment','_',dateName,'.xlsx');
+            % add POI librariy to java path to use xlwrite
+            javaaddpath('poi_library/poi-3.8-20120326.jar');
+            javaaddpath('poi_library/poi-ooxml-3.8-20120326.jar');
+            javaaddpath('poi_library/poi-ooxml-schemas-3.8-20120326.jar');
+            javaaddpath('poi_library/xmlbeans-2.3.0.jar');
+            javaaddpath('poi_library/dom4j-1.6.1.jar');
             % create excel file
             % use xlwrite insted of xlswrite
             xlwrite(obj.ex.storageFile,{'create excel file'});
@@ -78,28 +89,35 @@ classdef utility < handle
             xlwrite(obj.ex.storageFile,obj.ex.unchangedDist,1,'M1');
             xlwrite(obj.ex.storageFile,obj.ex.cvxPrecision,1,'N1');
             
-            %% set empirical observation
+            % set empirical observation
             obj.ex.gmaDist = zeros(obj.ex.alphabetSize,1);
-            %% set performance
+            
+            % set performance
             obj.ex.performance = -inf;
             obj.ex.performanceMean = containers.Map;
+            
             % std is normalized by N-1
             obj.ex.performanceStd = containers.Map;
-            %% unchanged dist
+            
+            % unchanged dist
             % column vector of dist
             obj.ex.unchangedDist = obj.ex.unchangedDist(:);
-            %% set lmp direction
-            % using i-projection of unchanged dist on set of dists with mean >= beta
+            
+            % set lmp direction
+            % using i-projection of unchanged dist on
+            % set of dists with mean >= beta
             obj.i_proj(obj.ex.unchangedDist,obj.ex.beta)
             obj.ex.lmpDir = obj.ex.iProj-obj.ex.unchangedDist;
-            %% set i-projection
+            
+            % set i-projection
             klMean = obj.ex.klMeanRange(obj.ex.activeTestIndex{3}(1));
             obj.i_proj(obj.ex.unchangedDist,klMean)
-            %% cannot initialize mProj
+            
+            % cannot initialize mProj
             % because mProj depends on empirical dist
         end
         
-        %% utilities
+        % utilities
         function d = mean(obj,dist)
             d = obj.ex.alphabet'*dist;
         end
@@ -116,7 +134,8 @@ classdef utility < handle
             % tilt dist iteratively until error is small
             err = inf;
             while abs(err)>obj.ex.eps
-                obj.ex.iProj = obj.ex.iProj.*exp(sign(err)*obj.ex.eps*obj.ex.alphabet);
+                obj.ex.iProj = obj.ex.iProj ...
+                    .*exp(sign(err)*obj.ex.eps*obj.ex.alphabet);
                 obj.ex.iProj = obj.ex.iProj/sum(obj.ex.iProj);
                 err = mean-obj.mean(obj.ex.iProj);
             end
@@ -174,11 +193,13 @@ classdef utility < handle
             % calculate the probability of observing emp_dist from dist in
             % sampleSize trials
             d2 = zeros(obj.ex.sampleSize,1);
-            d3 = tril(ones(obj.ex.alphabetSize),-1)*obj.ex.sampleSize*emp_dist;
+            d3 = tril(ones(obj.ex.alphabetSize),-1) ...
+                *obj.ex.sampleSize*emp_dist;
             d3(obj.ex.alphabetSize+1) = obj.ex.sampleSize;
             for i = 1:obj.ex.alphabetSize
                 % debugging rounding error by round()
-                d2(round(d3(i))+1:round(d3(i+1))) = 1:round(obj.ex.sampleSize*emp_dist(i));
+                d2(round(d3(i))+1:round(d3(i+1))) = ...
+                    1:round(obj.ex.sampleSize*emp_dist(i));
             end
             
             % multinomial coefficient
@@ -223,8 +244,8 @@ classdef utility < handle
         end
         
         function [realEmpDist,numberOfTrials] = realize_mean(obj,dist,mean)
-            % realize dist sampleSize times and output the empirical dist if mean(dist) >=
-            % mean
+            % realize dist sampleSize times and output the empirical dist
+            % if mean(dist) >= mean
             numberOfTrials = 0;
             err = inf;
             while 0 < err
@@ -245,20 +266,29 @@ classdef utility < handle
             result = obj.ex.performance
             time = obj.ex.testTime;
             mtbf = obj.ex.mtbf;
-            performaceSheet = strcat(obj.ex.testNames{obj.ex.activeTestIndex{1}},'_',obj.ex.testTypes{obj.ex.activeTestIndex{2}})
-            timeSheet = strcat(obj.ex.testNames{obj.ex.activeTestIndex{1}},'_',obj.ex.testTypes{obj.ex.activeTestIndex{2}},'_time');
-            mtbfSheet = strcat(obj.ex.testNames{obj.ex.activeTestIndex{1}},'_mtbf');
+            performaceSheet = ...
+                strcat(obj.ex.testNames{obj.ex.activeTestIndex{1}},'_', ...
+                obj.ex.testTypes{obj.ex.activeTestIndex{2}})
+            timeSheet = ...
+                strcat(obj.ex.testNames{obj.ex.activeTestIndex{1}},'_', ...
+                obj.ex.testTypes{obj.ex.activeTestIndex{2}},'_time');
+            mtbfSheet = ...
+                strcat(obj.ex.testNames{obj.ex.activeTestIndex{1}}, ...
+                '_mtbf');
             if strcmp(obj.ex.testNames{obj.ex.activeTestIndex{1}},'kl')
                 % klMean = m, klRadius = r
                 % m(1)r(1), m(1)r(2), ..., m(2)r(1), m(2)r(2), ...
-                add = (obj.ex.activeTestIndex{3}(1)-1)*length(obj.ex.klRadiusRange)+obj.ex.activeTestIndex{3}(2);
+                add = (obj.ex.activeTestIndex{3}(1)-1) ...
+                    *length(obj.ex.klRadiusRange) ...
+                    +obj.ex.activeTestIndex{3}(2);
             else
                 add = obj.ex.activeTestIndex{3};
             end
             
             % convert number into A, B, ..., AA, AB, ... format used in
             % excel: 1>A, 10>J, 25>Y, 26>Z, 27>AA, 28>AB, ...
-            v = dec2base(add-1,26)+(dec2base(add-1,26)>57)*10+(dec2base(add-1,26)<=57)*17-1;
+            v = dec2base(add-1,26)+(dec2base(add-1,26)>57)*10 ...
+                +(dec2base(add-1,26)<=57)*17-1;
             v(end) = v(end)+1;
             cellLetters = char(v);
             cellNumber = obj.ex.activeTestIndex{4};
@@ -285,7 +315,8 @@ classdef utility < handle
                         parameterIndex(2) = 1;
                         if parameterIndex(1) < length(obj.ex.klMeanRange)
                             parameterIndex(1) = parameterIndex(1)+1;
-                            obj.i_proj(obj.ex.unchangedDist,obj.ex.klMeanRange(parameterIndex(1)));
+                            obj.i_proj(obj.ex.unchangedDist, ...
+                                obj.ex.klMeanRange(parameterIndex(1)));
                         else
                             parameterIndex(1) = 1;
                             if testTypeIndex < length(obj.ex.testTypes)
@@ -314,10 +345,14 @@ classdef utility < handle
                         if i == 2
                             rangeName = 'meanMeanRange';
                         else
-                            rangeName = strcat(obj.ex.testNames{obj.ex.activeTestIndex{1}},'ThrRange');
+                            rangeName = ...
+                                strcat(obj.ex.testNames{ ...
+                                obj.ex.activeTestIndex{1}},'ThrRange');
                         end
                         
-                        flag = flag|(testNameIndex == i && parameterIndex < length(obj.ex.(rangeName)));
+                        flag = flag|(testNameIndex == i ...
+                            && parameterIndex ...
+                            < length(obj.ex.(rangeName)));
                     end
                     
                     if flag
@@ -344,16 +379,22 @@ classdef utility < handle
                 
             end
             
-            obj.ex.activeTestIndex = {testNameIndex, testTypeIndex, parameterIndex, repetition};
+            obj.ex.activeTestIndex = {testNameIndex, testTypeIndex, ...
+                parameterIndex, repetition};
             obj.ex.performance = -inf;
         end
         
         function read_excel(obj)
             for i = 1:length(obj.ex.testNames)
                 for j = 1:length(obj.ex.testTypes)
-                    read = xlsread(obj.ex.storageFile,strcat(obj.ex.testNames{i},'_',obj.ex.testTypes{j}));
-                    obj.ex.performanceMean(strcat(obj.ex.testNames{i},'_',obj.ex.testTypes{j})) = mean(read);
-                    obj.ex.performanceStd(strcat(obj.ex.testNames{i},'_',obj.ex.testTypes{j})) = std(read);
+                    read = ...
+                        xlsread(obj.ex.storageFile, ...
+                        strcat(obj.ex.testNames{i},'_', ...
+                        obj.ex.testTypes{j}));
+                    obj.ex.performanceMean(strcat(obj.ex.testNames{i}, ...
+                        '_',obj.ex.testTypes{j})) = mean(read);
+                    obj.ex.performanceStd(strcat(obj.ex.testNames{i}, ...
+                        '_',obj.ex.testTypes{j})) = std(read);
                 end
                 
             end
@@ -365,8 +406,11 @@ classdef utility < handle
                 figure
                 hold on
                 grid minor
-                pfa = xlsread(obj.ex.storageFile,strcat(obj.ex.testNames{i},'_','pfa'));
-                pmd = xlsread(obj.ex.storageFile,strcat(obj.ex.testNames{i},'_','pmd'));
+                pfa = xlsread( ...
+                    obj.ex.storageFile,strcat(obj.ex.testNames{i}, ...
+                    '_','pfa'));
+                pmd = xlsread(obj.ex.storageFile, ...
+                    strcat(obj.ex.testNames{i},'_','pmd'));
                 pfaMean = mean(pfa);
                 pfaStd = std(pfa);
                 % define probability of detection
@@ -402,12 +446,13 @@ classdef utility < handle
             
         end
         
-        %% change in single string tests
+        % change in single string tests
         function isChange = kl_is_change(obj,dist)
             % decide change if mean and kl distance is above threshold
             % 0/1 output
             % do the i-projection only ONCE for each kl mean
-            % obj.i_proj(obj.ex.unchangedDist,obj.ex.klMeanRange(obj.ex.activeTestIndex{3}(1)));
+            % obj.i_proj(obj.ex.unchangedDist, ...
+            obj.ex.klMeanRange(obj.ex.activeTestIndex{3}(1)));
             meanChange = obj.mean_change(dist);
             klChange = obj.kl_change(dist);
             isChange = and(meanChange,klChange);
@@ -432,26 +477,30 @@ classdef utility < handle
         end
         
         function isChange = lmp_is_change(obj,dist)
-            d = obj.ex.sampleSize*dist'*log(obj.ex.iProj./obj.ex.unchangedDist)+log(dist'*(obj.ex.lmpDir./obj.ex.iProj));
+            d = obj.ex.sampleSize*dist' ...
+                *log(obj.ex.iProj./obj.ex.unchangedDist) ...
+                +log(dist'*(obj.ex.lmpDir./obj.ex.iProj));
             lmpThr = obj.ex.lmpThrRange(obj.ex.activeTestIndex{3});
             isChange = d >= lmpThr;
         end
         
         function isChange = glr_is_change(obj,dist)
             obj.m_proj(dist,obj.ex.beta)
-            score = obj.emp_prob_calc(obj.ex.mProj,dist)/obj.emp_prob_calc(obj.ex.unchangedDist,dist);
+            score = obj.emp_prob_calc(obj.ex.mProj,dist) ...
+                /obj.emp_prob_calc(obj.ex.unchangedDist,dist);
             glrThr = obj.ex.glrThrRange(obj.ex.activeTestIndex{3});
             isChange = score >= glrThr;
         end
         
-        %% repetetive false alarm tests
+        % repetetive false alarm tests
         function kl_pfa(obj)
             % probability of false alarm for the KL divergence test
             numberOfFalseAlarms = 0;
             testTimeTemp = tic;
             for i = 1:obj.ex.pfaIt(1)
                 dist = obj.realize(obj.ex.unchangedDist);
-                numberOfFalseAlarms = numberOfFalseAlarms+obj.kl_is_change(dist);
+                numberOfFalseAlarms = numberOfFalseAlarms ...
+                    +obj.kl_is_change(dist);
             end
             
             obj.ex.testTime = toc(testTimeTemp)/obj.ex.pfaIt(1);
@@ -464,7 +513,8 @@ classdef utility < handle
             testTimeTemp = tic;
             for i = 1:obj.ex.pfaIt(2)
                 dist = obj.realize(obj.ex.unchangedDist);
-                numberOfFalseAlarms = numberOfFalseAlarms+obj.mean_is_change(dist);
+                numberOfFalseAlarms = numberOfFalseAlarms ...
+                    +obj.mean_is_change(dist);
             end
             
             obj.ex.testTime = toc(testTimeTemp)/obj.ex.pfaIt(2);
@@ -477,7 +527,8 @@ classdef utility < handle
             testTimeTemp = tic;
             for i = 1:obj.ex.pfaIt(3)
                 dist = obj.realize(obj.ex.unchangedDist);
-                numberOfFalseAlarms = numberOfFalseAlarms+obj.lmp_is_change(dist);
+                numberOfFalseAlarms = numberOfFalseAlarms ...
+                    +obj.lmp_is_change(dist);
             end
             
             obj.ex.testTime = toc(testTimeTemp)/obj.ex.pfaIt(3);
@@ -490,7 +541,8 @@ classdef utility < handle
             testTimeTemp = tic;
             for i = 1:obj.ex.pfaIt(4)
                 dist = obj.realize(obj.ex.unchangedDist);
-                numberOfFalseAlarms = numberOfFalseAlarms+obj.glr_is_change(dist);
+                numberOfFalseAlarms = numberOfFalseAlarms ...
+                    +obj.glr_is_change(dist);
             end
             
             obj.ex.testTime = toc(testTimeTemp)/obj.ex.pfaIt(4);
@@ -498,14 +550,15 @@ classdef utility < handle
             obj.write_excel()
         end
         
-        %% repetetive misdetection tests
+        % repetetive misdetection tests
         function kl_pmd(obj)
             % probability of misdetection for the KL divergence test
             numberOfMisdetections = 0;
             testTimeTemp = tic;
             for i = 1:obj.ex.pmdIt(1)
                 empDist = obj.realize(obj.ex.changedDist);
-                numberOfMisdetections = numberOfMisdetections+(1-obj.kl_is_change(empDist));
+                numberOfMisdetections = numberOfMisdetections ...
+                    +(1-obj.kl_is_change(empDist));
                 obj.ex.changedDist = obj.random_dist_mean(obj.ex.beta);
             end
             
@@ -520,7 +573,8 @@ classdef utility < handle
             for i = 1:obj.ex.pmdIt(2)
                 obj.ex.changedDist = obj.random_dist_mean(obj.ex.beta);
                 empDist = obj.realize(obj.ex.changedDist);
-                numberOfMisdetections = numberOfMisdetections+(1-obj.mean_is_change(empDist));
+                numberOfMisdetections = numberOfMisdetections ...
+                    +(1-obj.mean_is_change(empDist));
             end
             
             obj.ex.testTime = toc(testTimeTemp)/obj.ex.pmdIt(2);
@@ -534,7 +588,8 @@ classdef utility < handle
             for i = 1:obj.ex.pmdIt(3)
                 obj.ex.changedDist = obj.random_dist_mean(obj.ex.beta);
                 empDist = obj.realize(obj.ex.changedDist);
-                numberOfMisdetections = numberOfMisdetections+(1-obj.lmp_is_change(empDist));
+                numberOfMisdetections = numberOfMisdetections ...
+                    +(1-obj.lmp_is_change(empDist));
             end
             
             obj.ex.testTime = toc(testTimeTemp)/obj.ex.pmdIt(3);
@@ -548,7 +603,8 @@ classdef utility < handle
             for i = 1:obj.ex.pmdIt(4)
                 obj.ex.changedDist = obj.random_dist_mean(obj.ex.beta);
                 empDist = obj.realize(obj.ex.changedDist);
-                numberOfMisdetections = numberOfMisdetections+(1-obj.glr_is_change(empDist));
+                numberOfMisdetections = numberOfMisdetections ...
+                    +(1-obj.glr_is_change(empDist));
             end
             
             obj.ex.testTime = toc(testTimeTemp)/obj.ex.pmdIt(4);
@@ -556,7 +612,7 @@ classdef utility < handle
             obj.write_excel()
         end
         
-        %% time series
+        % time series
         function unchangedSeries = unchanged_series(obj)
             seed = rand(1,obj.ex.stringLength);
             seedRep = ones(obj.ex.alphabetSize,1)*seed;
@@ -567,7 +623,8 @@ classdef utility < handle
         end
         
         function movingAverage = moving_average(obj,series)
-            % tsmovavg (time series moving average) will be removed in future Matlab releases!
+            % tsmovavg (time series moving average) will be removed ...
+            % in future Matlab releases!
             movingAverage = tsmovavg(series,'s',obj.ex.sampleSize);
         end
         
@@ -578,24 +635,31 @@ classdef utility < handle
                 unchangedSeries = obj.unchanged_series();
                 movingAverage = obj.moving_average(unchangedSeries);
                 klMeanAlarmTimes = find(movingAverage >= klMean);
-                klAlarmTimes = obj.multiple_kl_change(unchangedSeries,klMeanAlarmTimes);
+                klAlarmTimes = obj.multiple_kl_change(unchangedSeries, ...
+                    klMeanAlarmTimes);
                 failureTimes(i) = min([klAlarmTimes,obj.ex.stringLength]);
             end
             
             obj.ex.mtbf = sum(failureTimes)/obj.ex.pfaIt(1);
         end
         
-        function klAlarmTimes = multiple_kl_change(obj,series,klMeanAlarmTimes)
+        function klAlarmTimes = ...
+                multiple_kl_change(obj,series,klMeanAlarmTimes)
             klRadius = obj.ex.klRadiusRange(obj.ex.activeTestIndex{3}(2));
             numberOfKlMeanAlarmTimes = length(klMeanAlarmTimes);
             meanAlarmTimesRep = ones(obj.ex.sampleSize,1)*klMeanAlarmTimes;
-            subtract = (obj.ex.sampleSize-1:-1:0)'*ones(1,numberOfKlMeanAlarmTimes);
+            subtract = (obj.ex.sampleSize-1:-1:0)' ...
+                *ones(1,numberOfKlMeanAlarmTimes);
             observationTimesConsidered = meanAlarmTimesRep-subtract;
             observationsConsidered = series(observationTimesConsidered);
-            observationsConsideredRep = repmat(observationsConsidered,1,1,obj.ex.alphabetSize);
-            alphabetRep = repmat(obj.ex.alphabet,1,obj.ex.sampleSize,numberOfKlMeanAlarmTimes);
+            observationsConsideredRep = ...
+                repmat(observationsConsidered,1,1,obj.ex.alphabetSize);
+            alphabetRep = repmat(obj.ex.alphabet,1, ...
+                obj.ex.sampleSize,numberOfKlMeanAlarmTimes);
             alphabetRep = permute(alphabetRep,[2 3 1]);
-            empiricalDists = sum(observationsConsideredRep == alphabetRep,1)/obj.ex.sampleSize;
+            empiricalDists = ...
+                sum(observationsConsideredRep == alphabetRep,1) ...
+                /obj.ex.sampleSize;
             klDistances = zeros(numberOfKlMeanAlarmTimes,1);
             for i=1:numberOfKlMeanAlarmTimes
                 dummy = empiricalDists(1,i,:);
@@ -612,7 +676,8 @@ classdef utility < handle
                 unchangedSeries = obj.unchanged_series();
                 movingAverage = obj.moving_average(unchangedSeries);
                 meanAlarmTimes = find(movingAverage >= meanMean);
-                failureTimes(i) = min([meanAlarmTimes,obj.ex.stringLength]);
+                failureTimes(i) = ...
+                    min([meanAlarmTimes,obj.ex.stringLength]);
             end
             
             obj.ex.mtbf = sum(failureTimes)/obj.ex.pfaIt(2);
@@ -632,18 +697,25 @@ classdef utility < handle
         function lmpAlarmTimes = multiple_lmp_change(obj,series)
             lmpThr = obj.ex.lmpThrRange(obj.ex.activeTestIndex{3});
             numberOfTimes = length(obj.ex.stringLength-obj.sampleSize+1);
-            timesRep = ones(obj.ex.sampleSize,1)*(obj.sampleSize:obj.ex.stringLength);
+            timesRep = ones(obj.ex.sampleSize,1) ...
+                *(obj.sampleSize:obj.ex.stringLength);
             subtract = (obj.ex.sampleSize-1:-1:0)'*ones(1,numberOfTimes);
             observationTimesConsidered = timesRep-subtract;
             observationsConsidered = series(observationTimesConsidered);
-            observationsConsideredRep = repmat(observationsConsidered,1,1,obj.ex.alphabetSize);
-            alphabetRep = repmat(obj.ex.alphabet,1,obj.ex.sampleSize,numberOfTimes);
+            observationsConsideredRep = ...
+                repmat(observationsConsidered,1,1,obj.ex.alphabetSize);
+            alphabetRep = ...
+                repmat(obj.ex.alphabet,1,obj.ex.sampleSize,numberOfTimes);
             alphabetRep = permute(alphabetRep,[2 3 1]);
-            empiricalDists = sum(observationsConsideredRep == alphabetRep,1)/obj.ex.sampleSize;
+            empiricalDists = ...
+                sum(observationsConsideredRep == alphabetRep,1) ...
+                /obj.ex.sampleSize;
             lmpValues = zeros(numberOfTimes,1);
             for i=1:numberOfTimes
                 dummy = empiricalDists(1,i,:);
-                lmpValues(i) = obj.ex.sampleSize*dummy(:)'*log(obj.ex.iProj./obj.ex.unchangedDist)+log(dummy(:)'*(obj.ex.lmpDir./obj.ex.iProj));
+                lmpValues(i) = obj.ex.sampleSize*dummy(:)' ...
+                    *log(obj.ex.iProj./obj.ex.unchangedDist) ...
+                    +log(dummy(:)'*(obj.ex.lmpDir./obj.ex.iProj));
             end
             
             % observation time index and series index
@@ -665,19 +737,26 @@ classdef utility < handle
         function glrAlarmTimes = multiple_glr_change(obj,series)
             glrThr = obj.ex.glrThrRange(obj.ex.activeTestIndex{3});
             numberOfTimes = length(obj.ex.stringLength-obj.sampleSize+1);
-            timesRep = ones(obj.ex.sampleSize,1)*(obj.sampleSize:obj.ex.stringLength);
+            timesRep = ones(obj.ex.sampleSize,1) ...
+                *(obj.sampleSize:obj.ex.stringLength);
             subtract = (obj.ex.sampleSize-1:-1:0)'*ones(1,numberOfTimes);
             observationTimesConsidered = timesRep-subtract;
             observationsConsidered = series(observationTimesConsidered);
-            observationsConsideredRep = repmat(observationsConsidered,1,1,obj.ex.alphabetSize);
-            alphabetRep = repmat(obj.ex.alphabet,1,obj.ex.sampleSize,numberOfTimes);
+            observationsConsideredRep = ...
+                repmat(observationsConsidered,1,1,obj.ex.alphabetSize);
+            alphabetRep = ...
+                repmat(obj.ex.alphabet,1,obj.ex.sampleSize,numberOfTimes);
             alphabetRep = permute(alphabetRep,[2 3 1]);
-            empiricalDists = sum(observationsConsideredRep == alphabetRep,1)/obj.ex.sampleSize;
+            empiricalDists = ...
+                sum(observationsConsideredRep == alphabetRep,1) ...
+                /obj.ex.sampleSize;
             glrValues = zeros(numberOfTimes,1);
             for i=1:numberOfTimes
                 dummy = empiricalDists(1,i,:);
                 obj.m_proj(dummy,obj.ex.beta)
-                glrValues(i) = obj.emp_prob_calc(obj.ex.mProj,dummy(:))/obj.emp_prob_calc(obj.ex.unchangedDist,dummy(:));
+                glrValues(i) = ...
+                    obj.emp_prob_calc(obj.ex.mProj,dummy(:)) ...
+                    /obj.emp_prob_calc(obj.ex.unchangedDist,dummy(:));
             end
             
             % observation time index and series index

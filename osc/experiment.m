@@ -44,7 +44,8 @@ classdef experiment < handle
         function obj = experiment()
             obj.alphabet = [-2 -1 0 1 2];
             obj.beta = .5;
-            obj.cvxFolder = '\\home2.coeit.osu.edu\s\sargun.1\ECE\Desktop\cvx';
+            obj.cvxFolder = ...
+                '\\home2.coeit.osu.edu\s\sargun.1\ECE\Desktop\cvx';
 %             eps=2.22*10^(-16) is the machine precision
 %             cvx_precision low: [eps^(6/16);eps^(4/16);eps^(4/16)];
 %             cvx_precision medium: [eps^(8/16);eps^(6/16);eps^(4/16)];
@@ -70,14 +71,17 @@ classdef experiment < handle
             obj.utility = utility(obj);
             obj.utility.setup()
             while obj.activeTestIndex{1} ~= 0
-%                 functionName = strcat('obj.utility.',obj.testNames{obj.activeTestIndex{1}},'_mtbf');
+%                 functionName = strcat('obj.utility.', ...
+%                     obj.testNames{obj.activeTestIndex{1}},'_mtbf');
 %                 eval(functionName)
-                functionName = strcat('obj.utility.',obj.testNames{obj.activeTestIndex{1}},'_',obj.testTypes{obj.activeTestIndex{2}});
+                functionName = strcat('obj.utility.', ...
+                    obj.testNames{obj.activeTestIndex{1}},'_', ...
+                    obj.testTypes{obj.activeTestIndex{2}});
                 eval(functionName)
                 clear(functionName)
             end
             
-            obj.utility.plot()
+%             obj.utility.plot()
         end
         
     end
