@@ -65,7 +65,7 @@ classdef utility < handle
             dateName = dateName(2:end-1);
             dateName = strrep(dateName,' ','_');
             % try .xls or .xlsx
-            obj.ex.storageFile = strcat('experiment','_',dateName,'.xlsx');
+            obj.ex.storageFile = strcat('experiment','_',dateName,'.xls');
             % add POI librariy to java path to use xlwrite
             javaaddpath('poi_library/poi-3.8-20120326.jar');
             javaaddpath('poi_library/poi-ooxml-3.8-20120326.jar');
@@ -171,7 +171,7 @@ classdef utility < handle
                 % if mean(dist) < mean, then mean(projection) = mean
                 fun = @(x) dist'*log(1./x);
                 % initializing
-                wmin = (alphabet(end)-beta)/(alphabet(end)-alphabet(1));
+                wmin = (obj.ex.alphabet(end)-obj.ex.beta)/(obj.ex.alphabet(end)-obj.ex.alphabet(1));
                 x0 = wmin;
                 x0(obj.ex.alphabetSize) = 1-wmin;
                 x0 = x0';
