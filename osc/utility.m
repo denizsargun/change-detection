@@ -184,7 +184,7 @@ classdef utility < handle
                 % lower and upper bounds for proj
                 lb = zeros(obj.ex.alphabetSize,1);
                 ub = ones(obj.ex.alphabetSize,1);
-                obj.ex.mProj = fmincon(fun,x0,A,b,Aeq,beq,lb,ub);
+                obj.ex.mProj = fmincon(fun,x0,A,b,Aeq,beq,lb,ub,'MaxFunctionEvaluations',obj.ex.maxFunctionEvaluations);
             end
             
         end
@@ -452,7 +452,7 @@ classdef utility < handle
             % 0/1 output
             % do the i-projection only ONCE for each kl mean
             % obj.i_proj(obj.ex.unchangedDist, ...
-            obj.ex.klMeanRange(obj.ex.activeTestIndex{3}(1)));
+            obj.ex.klMeanRange(obj.ex.activeTestIndex{3}(1));
             meanChange = obj.mean_change(dist);
             klChange = obj.kl_change(dist);
             isChange = and(meanChange,klChange);

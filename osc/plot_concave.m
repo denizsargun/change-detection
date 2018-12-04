@@ -19,11 +19,11 @@ function plot_concave(x,y,opt)
             for k = find(edgeIndeces)
                 if x(k) < x(i) && x(k) > x(j)
                     if (x(k)-x(j))*y(i)+(x(i)-x(k))*y(j)+(x(j)-x(i))*y(k) > 0
-                        [i x(i) y(i)]
-                        [j x(j) y(j)]
-                        [k x(k) y(k)]
-                        (x(k)-x(j))*y(i)+(x(i)-x(k))*y(j)+(x(j)-x(i))*y(k)
-                        find(edgeIndeces)
+%                         [i x(i) y(i)]
+%                         [j x(j) y(j)]
+%                         [k x(k) y(k)]
+%                         (x(k)-x(j))*y(i)+(x(i)-x(k))*y(j)+(x(j)-x(i))*y(k)
+%                         find(edgeIndeces)
                         edgeIndeces(k) = 0;
                     end
                     
@@ -35,6 +35,6 @@ function plot_concave(x,y,opt)
         
     end
     
-    plot(x(find(edgeIndeces)),y(find(edgeIndeces)),opt)
+    plot(sort(x(find(edgeIndeces))),sort(y(find(edgeIndeces))),opt)
     
 end

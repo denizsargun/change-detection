@@ -19,6 +19,7 @@ classdef experiment < handle
         iProj
         klMeanRange
         klRadiusRange
+        maxFunctionEvaluations
         lmpDir
         lmpThrRange
         meanMeanRange
@@ -43,7 +44,7 @@ classdef experiment < handle
     methods
         function obj = experiment()
             fid = fopen('directory.txt','w');
-            fprintf(fid, pwd);
+            fprintf(fid,pwd);
             fclose(fid);
             obj.alphabet = [-2 -1 0 1 2];
             obj.beta = .5;
@@ -60,6 +61,8 @@ classdef experiment < handle
             obj.glrThrRange = 2.^(0:.25:10)';
             obj.klMeanRange = (0:.05:0.5)';
             obj.klRadiusRange = 2.^(-9:1:-1)';
+            % default MaxFunctionEvaluations is 100*numberOfVariables = 500
+            obj.maxFunctionEvaluations = 300;
             obj.lmpThrRange = -2.^(0:.2:2.4)';
             obj.meanMeanRange = (-1:.05:1)';
             obj.numberOfReps = 200;
