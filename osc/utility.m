@@ -186,7 +186,8 @@ classdef utility < handle
                 lb = zeros(obj.ex.alphabetSize,1);
                 ub = ones(obj.ex.alphabetSize,1);
                 % options = optimoptions('fmincon','MaxFunEvals',obj.ex.maxFunEvals);
-                options = optimoptions('fmincon','MaxIter',obj.ex.maxIter);
+                nonlcon = [];
+                options = optimoptions('fmincon','MaxIter',nonlcon,obj.ex.maxIter);
                 obj.ex.mProj = fmincon(fun,x0,A,b,Aeq,beq,lb,ub,options);
             end
             
