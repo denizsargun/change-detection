@@ -171,7 +171,8 @@ classdef utility < handle
                 % if mean(dist) < mean, then mean(projection) = mean
                 fun = @(x) dist'*log(1./x);
                 % initializing
-                wmin = (obj.ex.alphabet(end)-obj.ex.beta)/(obj.ex.alphabet(end)-obj.ex.alphabet(1));
+                wmin = (obj.ex.alphabet(end)-mean) ...
+                    /(obj.ex.alphabet(end)-obj.ex.alphabet(1));
                 x0 = wmin;
                 x0(obj.ex.alphabetSize) = 1-wmin;
                 x0 = x0';
@@ -184,7 +185,9 @@ classdef utility < handle
                 % lower and upper bounds for proj
                 lb = zeros(obj.ex.alphabetSize,1);
                 ub = ones(obj.ex.alphabetSize,1);
-                obj.ex.mProj = fmincon(fun,x0,A,b,Aeq,beq,lb,ub,'MaxFunctionEvaluations',obj.ex.maxFunctionEvaluations);
+                % options = optimoptions('fmincon','MaxFunEvals',obj.ex.maxFunEvals);
+                options = optimoptions('fmincon','MaxIter',obj.ex.maxIter);
+                obj.ex.mProj = fmincon(fun,x0,A,b,Aeq,beq,lb,ub,options);
             end
             
         end
@@ -263,12 +266,12 @@ classdef utility < handle
         end
         
         function write_excel(obj)
-            result = obj.ex.performance
+            result = obj.ex.performance;
             time = obj.ex.testTime;
             mtbf = obj.ex.mtbf;
-            performaceSheet = ...
+            performanceSheet = ...
                 strcat(obj.ex.testNames{obj.ex.activeTestIndex{1}},'_', ...
-                obj.ex.testTypes{obj.ex.activeTestIndex{2}})
+                obj.ex.testTypes{obj.ex.activeTestIndex{2}});
             timeSheet = ...
                 strcat(obj.ex.testNames{obj.ex.activeTestIndex{1}},'_', ...
                 obj.ex.testTypes{obj.ex.activeTestIndex{2}},'_time');
@@ -292,8 +295,8 @@ classdef utility < handle
             v(end) = v(end)+1;
             cellLetters = char(v);
             cellNumber = obj.ex.activeTestIndex{4};
-            cell = char(cellLetters+string(cellNumber))
-            xlwrite(obj.ex.storageFile,result,performaceSheet,cell);
+            cell = char(cellLetters+string(cellNumber));
+            xlwrite(obj.ex.storageFile,result,performanceSheet,cell);
             xlwrite(obj.ex.storageFile,time,timeSheet,cell);
             %             xlwrite(obj.ex.storageFile,mtbf,mtbfSheet,cell);
             obj.next()
