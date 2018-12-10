@@ -65,7 +65,7 @@ classdef experiment < handle
             % default MaxFunEvals is 100*numberOfVariables = 500
             obj.maxFunEvals = 400;
             % default MaxIter is 400
-            obj.maxIter = 300;
+            obj.maxIter = 10;
             obj.lmpThrRange = -2.^(0:.2:2.4)';
             obj.meanMeanRange = (-1:.05:1)';
             obj.numberOfReps = 200;

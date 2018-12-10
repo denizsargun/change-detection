@@ -88,6 +88,8 @@ classdef utility < handle
             xlwrite(obj.ex.storageFile,obj.ex.sampleSize,1,'L1');
             xlwrite(obj.ex.storageFile,obj.ex.unchangedDist,1,'M1');
             xlwrite(obj.ex.storageFile,obj.ex.cvxPrecision,1,'N1');
+            xlwrite(obj.ex.storageFile,obj.ex.maxIter,1,'O1');
+            xlwrite(obj.ex.storageFile,obj.ex.maxFunEvals,1,'P1');
             
             % set empirical observation
             obj.ex.gmaDist = zeros(obj.ex.alphabetSize,1);
