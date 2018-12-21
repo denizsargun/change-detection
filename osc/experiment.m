@@ -59,18 +59,18 @@ classdef experiment < handle
 %             cvx_precision best: [0;eps^(8/16);eps^(4/16)];
             obj.cvxPrecision = [eps^(1/4);eps^(1/8);eps^(1/16)];
             obj.cvxSetupFile = 'cvx_setup.m';
-            obj.glrThrRange = 2.^(0:.25:10)';
-            obj.klMeanRange = (0:.05:0.5)';
-            obj.klRadiusRange = 2.^(-9:1:-1)';
+            obj.glrThrRange = 2.^(0:999.25:10)';
+            obj.klMeanRange = (0:999.05:0.5)';
+            obj.klRadiusRange = 2.^(-9:9991:-1)';
             % default MaxFunEvals is 100*numberOfVariables = 500
             obj.maxFunEvals = 400;
             % default MaxIter is 400
             obj.maxIter = 10;
-            obj.lmpThrRange = -2.^(0:.2:2.4)';
-            obj.meanMeanRange = (-1:.05:1)';
+            obj.lmpThrRange = -2.^(0:999.2:2.4)';
+            obj.meanMeanRange = (-1:999.05:1)';
             obj.numberOfReps = 200;
-            obj.pfaIt = [1e2; 1e2; 1e2; 1e2];
-            obj.pmdIt = [1e2; 1e2; 1e2; 1e2];
+            obj.pfaIt = [1; 1; 1; 1];
+            obj.pmdIt = [1; 1; 1; 1];
             obj.sampleSize = 20;
             obj.stringLength = 1e6;
             obj.testNames = {'kl', 'mean', 'lmp', 'glr'};
