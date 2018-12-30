@@ -1,67 +1,46 @@
-classdef klT
+classdef klM
     % Kullback Leibler distance test
     properties
         delayT
+        eps
         ex
         iProj
         iProjSet
+        it
         klMean
         klMeanRange
         klRadius
         klRadiusRange
+        method
         mtbfT
         pdT
         pfaT
-        testType
         utility
     end
     
     methods
-        function obj = klT(experiment)
-            obj.delayT = delayT();
+        function obj = klM(experiment)
+            obj.delayT = delayT(obj);
             obj.ex = experiment;
+            % eps = min abs difference among alphabet letters/1e5
+            obj.eps = min(abs(obj.ex.alphabet- ...
+                circshift(obj.ex.alphabet,1)))/1e5;
             obj.klMeanRange = obj.ex.klMeanRange;
             obj.klRadiusRange = obj.ex.klRadiusRange;
-            obj.mtbfT = mtbfT();
-            obj.pdT = pdT();
-            obj.pfaT = pfaT();
-            % roc/perf test
-            obj.testType = obj.ex.testType;
+            obj.method = 'klM';
+            obj.mtbfT = mtbfT(obj);
+            obj.pdT = pdT(obj);
+            obj.pfaT = pfaT(obj);
             obj.utility = obj.ex.utility;
             % cell of i projections, one per kl mean
             obj.iProjSet = obj.utility.i_proj(obj.ex.unchangedDist, ...
-                obj.klMeanRange);
-        end
-        
-        function run(obj)
-            if strcmp(obj.testType,'roc')
-                for i = 1:2
-                    for j = 1:2
-                        obj.pfaT.test(obj.ex,obj);
-                        obj.pdT.test(obj.ex,obj);
-                    end
-
-                end
-                
-            elseif strcmp(obj.testType,'perf')
-                for i = 1:2
-                    for j = 1:2
-                        obj.mtbfT.test(obj.ex,obj);
-                        obj.delayT.test(obj.ex,obj);
-                    end
-                    
-                end
-                
-            end
-                    
+                obj.klMeanRange,obj.eps);
+            run(obj)
         end
         
         function isChange = is_change(obj,dist)
             % decide change if mean and kl distance is above threshold
             % 0/1 output
-            % do the i-projection only ONCE for each kl mean
-            % obj.i_proj(obj.ex.unchangedDist, ...
-            % obj.ex.klMeanRange(obj.ex.activeTestIndex{3}(1)));
             meanChange = obj.mean_change(dist);
             klChange = obj.kl_change(dist);
             isChange = and(meanChange,klChange);

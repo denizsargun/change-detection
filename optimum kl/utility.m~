@@ -33,6 +33,10 @@ classdef utility < handle
             obj.ex.alpha = obj.mean(obj.ex.unchangedDist);
             obj.ex.alphabetSize = length(obj.ex.alphabet);
             
+            % eps = min abs difference among alphabet letters/1e5
+            obj.ex.eps = min(abs(obj.ex.alphabet- ...
+                circshift(obj.ex.alphabet,1)))/1e5;
+            
             % excel file
             date = clock;
             date(6) = round(date(6));
@@ -64,16 +68,18 @@ classdef utility < handle
             xlwrite(obj.ex.storageFile,obj.ex.lmpThrRange,1,'G2');
             xlwrite(obj.ex.storageFile,'meanMeanRange',1,'H1');
             xlwrite(obj.ex.storageFile,obj.ex.meanMeanRange,1,'H2');
-            xlwrite(obj.ex.storageFile,'it',1,'I1');
-            xlwrite(obj.ex.storageFile,obj.ex.it(:),1,'I2');
-            xlwrite(obj.ex.storageFile,'sampleSize',1,'J1');
-            xlwrite(obj.ex.storageFile,obj.ex.sampleSize,1,'J2');
-            xlwrite(obj.ex.storageFile,'unchangedDist',1,'K1');
-            xlwrite(obj.ex.storageFile,obj.ex.unchangedDist,1,'K2');
-            xlwrite(obj.ex.storageFile,'maxIter',1,'L1');
-            xlwrite(obj.ex.storageFile,obj.ex.maxIter,1,'L2');
-            xlwrite(obj.ex.storageFile,'maxFunEvals',1,'M1');
-            xlwrite(obj.ex.storageFile,obj.ex.maxFunEvals,1,'M2');
+            xlwrite(obj.ex.storageFile,'pfaIt',1,'I1');
+            xlwrite(obj.ex.storageFile,obj.ex.pfaIt,1,'I2');
+            xlwrite(obj.ex.storageFile,'pdIt',1,'J1');
+            xlwrite(obj.ex.storageFile,obj.ex.pdIt,1,'J2');
+            xlwrite(obj.ex.storageFile,'sampleSize',1,'K1');
+            xlwrite(obj.ex.storageFile,obj.ex.sampleSize,1,'K2');
+            xlwrite(obj.ex.storageFile,'unchangedDist',1,'L1');
+            xlwrite(obj.ex.storageFile,obj.ex.unchangedDist,1,'L2');
+            xlwrite(obj.ex.storageFile,'maxIter',1,'M1');
+            xlwrite(obj.ex.storageFile,obj.ex.maxIter,1,'M2');
+            xlwrite(obj.ex.storageFile,'maxFunEvals',1,'N1');
+            xlwrite(obj.ex.storageFile,obj.ex.maxFunEvals,1,'N2');
             
             % unchanged dist
             % column vector of dist
@@ -85,7 +91,7 @@ classdef utility < handle
             d = obj.ex.alphabet'*dist;
         end
         
-        function iProjSet = i_proj(obj,dist,meanRange,eps)
+        function iProjSet = i_proj(obj,dist,meanRange)
             iProjSet = cell(length(meanRange),1);
             for i = 1:length(obj.klMeanRange)
                 mean = obj.klMeanRange(i);
@@ -99,9 +105,9 @@ classdef utility < handle
                 % the projection is the minimum tilt tilted distribution
                 % tilt dist iteratively until error is small
                 err = inf;
-                while abs(err)>eps
+                while abs(err)>obj.ex.eps
                     iProjSet{i} = iProjSet{i}.*exp(sign(err) ...
-                        *eps*obj.ex.alphabet);
+                        *obj.ex.eps*obj.ex.alphabet);
                     iProjSet{i} = iProjSet{i}/sum(iProjSet{i});
                     err = mean-obj.mean(iProjSet{i});
                 end
@@ -216,11 +222,15 @@ classdef utility < handle
         end
         
         function write_excel(obj)
-            sheet = ...
-                strcat(obj.ex.methodNames{},'_');
+            result = obj.ex.performance;
+            time = obj.ex.testTime;
+            performanceSheet = ...
+                strcat(obj.ex.testNames{},'_', ...
+                obj.ex.testTypes{});
             timeSheet = ...
-                strcat(obj.ex.methodNames{},'_','_time');
-            if strcmp(obj.ex.methodNames{},'klM')
+                strcat(obj.ex.testNames{},'_', ...
+                obj.ex.testTypes{},'_time');
+            if strcmp(obj.ex.testNames{},'kl')
                 % klMean = m, klRadius = r
                 % m(1)r(1), m(1)r(2), ..., m(2)r(1), m(2)r(2), ...
                 add = (-1) ...
@@ -238,7 +248,7 @@ classdef utility < handle
             cellLetters = char(v);
             cellNumber = ;
             cell = char(cellLetters+string(cellNumber));
-            xlwrite(obj.ex.storageFile,result,sheet,cell);
+            xlwrite(obj.ex.storageFile,result,performanceSheet,cell);
             xlwrite(obj.ex.storageFile,time,timeSheet,cell);
         end
                 
