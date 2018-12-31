@@ -41,7 +41,7 @@ classdef utility < handle
             dateName = strrep(dateName,' ','_');
             % try .xls or .xlsx
             obj.ex.storageFile = strcat('experiment','_',dateName,'.xls');
-            % add POI librariy to java path to use xlwrite
+            % add POI library to java path to use xlwrite
             javaaddpath('poi_library/poi-3.8-20120326.jar');
             javaaddpath('poi_library/poi-ooxml-3.8-20120326.jar');
             javaaddpath('poi_library/poi-ooxml-schemas-3.8-20120326.jar');
@@ -213,33 +213,6 @@ classdef utility < handle
                 numberOfTrials = numberOfTrials+1;
             end
             
-        end
-        
-        function write_excel(obj)
-            sheet = ...
-                strcat(obj.ex.methodNames{},'_');
-            timeSheet = ...
-                strcat(obj.ex.methodNames{},'_','_time');
-            if strcmp(obj.ex.methodNames{},'klM')
-                % klMean = m, klRadius = r
-                % m(1)r(1), m(1)r(2), ..., m(2)r(1), m(2)r(2), ...
-                add = (-1) ...
-                    *length(obj.ex.klRadiusRange) ...
-                    +;
-            else
-                add = ;
-            end
-            
-            % convert number into A, B, ..., AA, AB, ... format used in
-            % excel: 1>A, 10>J, 25>Y, 26>Z, 27>AA, 28>AB, ...
-            v = dec2base(add-1,26)+(dec2base(add-1,26)>57)*10 ...
-                +(dec2base(add-1,26)<=57)*17-1;
-            v(end) = v(end)+1;
-            cellLetters = char(v);
-            cellNumber = ;
-            cell = char(cellLetters+string(cellNumber));
-            xlwrite(obj.ex.storageFile,result,sheet,cell);
-            xlwrite(obj.ex.storageFile,time,timeSheet,cell);
         end
                 
     end

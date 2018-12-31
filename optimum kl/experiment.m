@@ -14,11 +14,13 @@ classdef experiment < handle
         maxIter
         meanMeanRange
         methodNames
+        runner
         sampleSize
         storageFile
         testNames
         unchangedDist
         utility % utility toolbox
+        writer
     end
     
     methods
@@ -31,10 +33,10 @@ classdef experiment < handle
             obj.alphabet = [-2 -1 0 1 2];
             obj.beta = .5;
             obj.glrThrRange = 2.^(0:999.25:10)';
-            obj.it = [1 1 1 1; ... % klM pfa, pd, mtbf, delay
-                1 1 1 1; ... % meanM pfa, pd, mtbf, delay
-                1 1 1 1; ... % lmpM pfa, pd, mtbf, delay
-                1 1 1 1];    % glrM pfa, pd, mtbf, delay
+            obj.it = [1 1 1 1 1; ... % klM pfa, pd, mtbf, delay, time
+                1 1 1 1 1; ... % meanM pfa, pd, mtbf, delay, time
+                1 1 1 1 1; ... % lmpM pfa, pd, mtbf, delay, time
+                1 1 1 1 1];    % glrM pfa, pd, mtbf, delay, time
             obj.klMeanRange = (0:999.05:0.5)';
             obj.klRadiusRange = 2.^(-9:9991:-1)';
             obj.lmpThrRange = -2.^(0:.2:2.4)';
@@ -45,11 +47,14 @@ classdef experiment < handle
             obj.meanMeanRange = (-1:.05:1)';
             obj.methodNames = {'klM', 'meanM', 'lmpM', 'glrM'};
             obj.sampleSize = 20;
-            obj.testNames = {'pfa','pd','mtbf','delay'};
+            obj.testNames = {'pfaT','pdT','mtbfT','delayT','timeT'};
             obj.unchangedDist = 1/5*ones(5,1);
             obj.utility = utility(obj);
             obj.utility.setup()
-            runEx(obj)
+            obj.writer = writer(obj);
+            % runner is the last obj to be defined
+            obj.runner = runner(obj);
+            obj.runner.runEx(obj)
         end
         
     end

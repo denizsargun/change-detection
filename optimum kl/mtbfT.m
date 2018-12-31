@@ -4,6 +4,7 @@ classdef mtbfT
         ex
         it
         method
+        testName
         utility
     end
     
@@ -11,11 +12,18 @@ classdef mtbfT
         function obj = mtbfT(method)
             obj.method = method;
             obj.ex = obj.method.ex;
-            obj.utility = obj.ex.utility;
+            obj.it = obj.method.it(3);
+            obj.testName = 'mtbfT';
+            obj.utility = obj.method.utility;
         end
         
-        function test(obj)
+        function mtbf = test(obj)
+            if obj.it == 0
+                return
+            end
+            
             % mean time between failures
+            totalTimeToFailure = 0;
             for i = 1:obj.it
                 alarmTime = 0;
                 while ~detected
@@ -24,10 +32,12 @@ classdef mtbfT
                     detected = obj.method.is_change(dist);
                 end
                 
+                totalTimeToFailure = totalTimeToFailure+alarmTime;
             end
             
+            mtbf = totalTimeToFailure/obj.it;
         end
         
     end
+    
 end
-

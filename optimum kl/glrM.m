@@ -1,4 +1,4 @@
-classdef glrM
+classdef glrM < handle
     % generalized likelihood ratio test
     properties
         delayT
@@ -6,9 +6,10 @@ classdef glrM
         glrThr
         glrThrRange
         it
-        method
+        methodName
         mProj
         mtbfT
+        numberOfSettings
         pdT
         pfaT
         utility
@@ -19,22 +20,26 @@ classdef glrM
             obj.ex = experiment;
             obj.glrThrRange = obj.ex.glrThrRange;
             obj.glrThr = obj.glrThrRange(1);
-            obj.method = 'glrM';
-            obj.pfaT = pfaT(obj);
-            obj.pdT = pdT(obj);
-            obj.mtbfT = mtbfT(obj);
+            obj.methodName = 'glrM';
+            obj.numberOfSettings = length(glrThrRange);
             obj.delayT = delayT(obj);
+            obj.mtbfT = mtbfT(obj);
+            obj.pdT = pdT(obj);
+            obj.pfaT = pfaT(obj);
         end
         
         function isChange = is_change(obj,dist)
             obj.mProj = obj.utility.m_proj(dist,obj.ex.beta);
             score = obj.utility.emp_prob_calc(obj.mProj,dist) ...
                 /obj.emp_prob_calc(obj.ex.unchangedDist,dist);
-            glrThr = obj.ex.glrThrRange();
-            isChange = score >= glrThr;
+            isChange = score >= obj.glrThr;
+        end
+        
+        function update(obj)
+            index = find(obj.glrThr == obj.glrThrRange);
+            obj.glrThr = obj.glrThrRange(index+1);
         end
         
     end
     
 end
-

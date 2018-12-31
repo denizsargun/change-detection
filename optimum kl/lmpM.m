@@ -1,4 +1,4 @@
-classdef lmpM
+classdef lmpM < handle
     % locally most powerful test
     properties
         delayT
@@ -9,7 +9,8 @@ classdef lmpM
         lmpDir
         lmpThr
         lmpThrRange
-        method
+        methodName
+        numberOfSettings
         mtbfT
         pdT
         pfaT
@@ -24,27 +25,32 @@ classdef lmpM
                 circshift(obj.ex.alphabet,1)))/1e6;
             obj.lmpThrRange = obj.ex.lmpThrRange;
             obj.lmpThr = obj.lmpThrRange(1);
-            obj.method = 'lmpM';
-            obj.pfaT = pfaT(obj);
-            obj.pdT = pdT(obj);
-            obj.mtbfT = mtbfT(obj);
+            obj.methodName = 'lmpM';
+            obj.numberOfSettings = length(lmpThrRange);
             obj.delayT = delayT(obj);
+            obj.mtbfT = mtbfT(obj);
+            obj.pdT = pdT(obj);
+            obj.pfaT = pfaT(obj);
             % set lmp direction
             % using i-projection of unchanged dist on
             % set of dists with mean >= beta
-            obj.utility.i_proj(obj.ex.unchangedDist,obj.ex.beta,obj.eps)
+            obj.iProj = obj.utility.i_proj(obj.ex.unchangedDist, ...
+                obj.ex.beta,obj.eps);
             obj.lmpDir = obj.iProj-obj.ex.unchangedDist;
         end
         
         function isChange = is_change(obj,dist)
-            d = obj.ex.sampleSize*dist' ...
+            score = obj.ex.sampleSize*dist' ...
                 *log(obj.iProj./obj.ex.unchangedDist) ...
-                +log(dist'*(obj.ex.lmpDir./obj.iProj));
-            lmpThr = obj.ex.lmpThrRange();
-            isChange = d >= lmpThr;
+                +log(dist'*(obj.lmpDir./obj.iProj));
+            isChange = score >= obj.lmpThr;
+        end
+        
+        function update(obj)
+            index = find(obj.lmpThr == obj.lmpThrRange);
+            obj.lmpThr = obj.lmpThrRange(index+1);
         end
         
     end
     
 end
-

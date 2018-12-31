@@ -5,6 +5,7 @@ classdef delayT
         ex
         it
         method
+        testName
         utility
     end
     
@@ -12,11 +13,18 @@ classdef delayT
         function obj = delayT(method)
             obj.method = method;
             obj.ex = obj.method.ex;
-            obj.utility = obj.ex.utility;
+            obj.it = obj.method.it(4);
+            obj.testName = 'delayT';
+            obj.utility = obj.method.utility;
         end
         
-        function test(obj)
+        function delay = test(obj)
+            if obj.it == 0
+                return
+            end
+            
             % delay
+            totalDelay = 0;
             for i = 1:obj.it
                 alarmTime = 0;
                 obj.changedDist = ...
@@ -25,14 +33,14 @@ classdef delayT
                     dist = obj.utility.realize(obj.changedDist);
                     alarmTime = alarmTime+obj.ex.sampleSize;
                     detected = obj.method.is_change(dist);
-                    obj.changedDist = ...
-                        obj.utility.random_dist_mean(obj.ex.beta);
                 end
                 
+                totalDelay = totalDelay+alarmTime;
             end
             
+            delay = totalDelay/obj.it;
         end
         
     end
+    
 end
-

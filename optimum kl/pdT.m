@@ -5,6 +5,7 @@ classdef pdT
         ex
         it
         method
+        testName
         utility
     end
     
@@ -12,23 +13,29 @@ classdef pdT
         function obj = pdT(method)
             obj.method = method;
             obj.ex = obj.method.ex;
-            obj.utility = obj.ex.utility;
+            obj.it = obj.method.it(2);
+            obj.testName = 'pdT';
+            obj.utility = obj.method.utility;
         end
         
-        function test(obj)
-            numberOfDetections = 0;
-            % probability of detection
-            obj.changedDist = obj.utility.random_dist_mean(obj.ex.beta);
-            for i = 1:obj.it
-                empDist = obj.utility.realize(obj.changedDist);
-                numberOfDetections = numberOfDetections ...
-                    +obj.method.is_change(empDist);
-                obj.changedDist = ...
-                    obj.utility.random_dist_mean(obj.ex.beta);
+        function pd = test(obj)
+            if obj.it == 0
+                return
             end
             
+            % probability of detection
+            numberOfDetections = 0;
+            for i = 1:obj.it
+                obj.changedDist = ...
+                    obj.utility.random_dist_mean(obj.ex.beta);
+                dist = obj.utility.realize(obj.changedDist);
+                numberOfDetections = numberOfDetections ...
+                    +obj.method.is_change(dist);
+            end
+            
+            pd = numberOfDetections/obj.it;
         end
         
     end
+    
 end
-
