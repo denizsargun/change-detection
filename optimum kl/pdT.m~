@@ -20,12 +20,12 @@ classdef pdT
         
         function pd = test(obj)
             if obj.it == 0
+                pd = -1;
                 return
             end
             
             % probability of detection
             numberOfDetections = 0;
-            time = tic;
             for i = 1:obj.it
                 obj.changedDist = ...
                     obj.utility.random_dist_mean(obj.ex.beta);
@@ -34,7 +34,6 @@ classdef pdT
                     +obj.method.is_change(dist);
             end
             
-            meanTime = toc(time)/obj.it;
             pd = numberOfDetections/obj.it;
         end
         

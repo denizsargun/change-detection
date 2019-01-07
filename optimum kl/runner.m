@@ -10,18 +10,21 @@ classdef runner < handle
         end
         
         function runEx(obj)
-            for methodName = obj.ex.methodNames
+            for i = 1:length(obj.ex.methodNames)
+                methodName = obj.ex.methodNames{i};
                 methodString = strcat(methodName,'(obj.ex)');
                 method = eval(methodString);
                 clear(methodString)
                 obj.runMethod(method)
+                delete(method)
             end
             
         end
         
         function runMethod(obj,method)
             for i = 1:method.numberOfSettings
-                for testName = obj.ex.testNames
+                for j = 1:length(obj.ex.testNames)
+                    testName = obj.ex.testNames{j};
                     testString = strcat('method.',testName,'.test');
                     output = eval(testString);
                     clear(testString)
@@ -29,7 +32,7 @@ classdef runner < handle
                 end
                 
                 if i ~= method.numberOfSettings
-                   method.update
+                    method.update
                 end
                 
             end

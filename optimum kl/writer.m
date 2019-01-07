@@ -10,8 +10,8 @@ classdef writer < handle
             obj.storageFile = obj.ex.storageFile;
         end
         
-        function write(obj,output,method,test,i)
-            sheetName = strcat(method.methodName,'_',test.testName);
+        function write(obj,output,method,testName,i)
+            sheetName = strcat(method.methodName,'_',testName);
             v = dec2base(i-1,26)+(dec2base(i-1,26)>57)*10 ...
                 +(dec2base(i-1,26)<=57)*17-1;
             v(end) = v(end)+1;
@@ -20,7 +20,7 @@ classdef writer < handle
             cell = char(cellLetters+string(cellNumber));
             % xlswrite()
             % or
-            xlwrite(obj.storageFile,output,sheetName,cell)
+            xlwrite(obj.storageFile,output,sheetName,cell);
             % or
             % csvwrite()
         end

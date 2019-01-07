@@ -19,6 +19,7 @@ classdef timeT
         
         function time = test(obj)
             if obj.it == 0
+                time = -1;
                 return
             end
             

@@ -20,6 +20,7 @@ classdef pdT
         
         function pd = test(obj)
             if obj.it == 0
+                pd = -1;
                 return
             end
             

@@ -85,13 +85,13 @@ classdef utility < handle
             d = obj.ex.alphabet'*dist;
         end
         
-        function iProjSet = i_proj(obj,dist,meanRange,eps)
-            iProjSet = cell(length(meanRange),1);
-            for i = 1:length(obj.klMeanRange)
-                mean = obj.klMeanRange(i);
+        function iProjCell = i_proj(obj,dist,meanRange,eps)
+            iProjCell = cell(length(meanRange),1);
+            for i = 1:length(meanRange)
+                mean = meanRange(i);
                 % I-project dist to the convex set {mean(dist)>=mean}
-                iProjSet{i} = dist;
-                if obj.mean(iProjSet{i}) >= mean
+                iProjCell{i} = dist;
+                if obj.mean(iProjCell{i}) >= mean
                     return
                 end
                 
@@ -100,10 +100,10 @@ classdef utility < handle
                 % tilt dist iteratively until error is small
                 err = inf;
                 while abs(err)>eps
-                    iProjSet{i} = iProjSet{i}.*exp(sign(err) ...
+                    iProjCell{i} = iProjCell{i}.*exp(sign(err) ...
                         *eps*obj.ex.alphabet);
-                    iProjSet{i} = iProjSet{i}/sum(iProjSet{i});
-                    err = mean-obj.mean(iProjSet{i});
+                    iProjCell{i} = iProjCell{i}/sum(iProjCell{i});
+                    err = mean-obj.mean(iProjCell{i});
                 end
                 
             end

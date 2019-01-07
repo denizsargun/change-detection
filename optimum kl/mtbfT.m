@@ -19,6 +19,7 @@ classdef mtbfT
         
         function mtbf = test(obj)
             if obj.it == 0
+                mtbf = -1;
                 return
             end
             
@@ -26,6 +27,7 @@ classdef mtbfT
             totalTimeToFailure = 0;
             for i = 1:obj.it
                 alarmTime = 0;
+                detected = 0;
                 while ~detected
                     dist = obj.utility.realize(obj.ex.unchangedDist);
                     alarmTime = alarmTime+obj.ex.sampleSize;

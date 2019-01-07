@@ -20,6 +20,7 @@ classdef delayT
         
         function delay = test(obj)
             if obj.it == 0
+                delay = -1;
                 return
             end
             
@@ -27,6 +28,7 @@ classdef delayT
             totalDelay = 0;
             for i = 1:obj.it
                 alarmTime = 0;
+                detected = 0;
                 obj.changedDist = ...
                     obj.utility.random_dist_mean(obj.ex.beta);
                 while ~detected

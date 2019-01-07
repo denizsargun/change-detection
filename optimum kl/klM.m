@@ -5,7 +5,7 @@ classdef klM < handle
         eps
         ex
         iProj
-        iProjSet
+        iProjCell
         it
         klMean
         klMeanRange
@@ -16,6 +16,7 @@ classdef klM < handle
         numberOfSettings
         pdT
         pfaT
+        timeT
         utility
     end
     
@@ -25,23 +26,25 @@ classdef klM < handle
             % eps = min abs difference among alphabet letters/1e5
             obj.eps = min(abs(obj.ex.alphabet- ...
                 circshift(obj.ex.alphabet,1)))/1e5;
+            obj.it = obj.ex.it(1,:);
             obj.klMeanRange = obj.ex.klMeanRange;
             obj.klMean = obj.klMeanRange(1);
             obj.klRadiusRange = obj.ex.klRadiusRange;
             obj.klRadius = obj.klRadiusRange(1);
             obj.methodName = 'klM';
-            obj.numberOfSettings = length(klMeanRange) ...
-                *length(klRadiusRange);
+            obj.numberOfSettings = length(obj.klMeanRange) ...
+                *length(obj.klRadiusRange);
             obj.utility = obj.ex.utility;
             % cell of i projections, one per kl mean
-            obj.iProjSet = obj.utility.i_proj(obj.ex.unchangedDist, ...
+            obj.iProjCell = obj.utility.i_proj(obj.ex.unchangedDist, ...
                 obj.klMeanRange,obj.eps);
-            obj.iProj = obj.iProjSet(1);
+            obj.iProj = obj.iProjCell{1};
             % tests need ex and utility objects
             obj.delayT = delayT(obj);
             obj.mtbfT = mtbfT(obj);
             obj.pdT = pdT(obj);
             obj.pfaT = pfaT(obj);
+            obj.timeT = timeT(obj);
         end
         
         function isChange = is_change(obj,dist)
@@ -72,7 +75,7 @@ classdef klM < handle
                 klMeanIndex = find(obj.klMean == obj.klMeanRange);
                 obj.klRadius = obj.klRadiusRange(1);
                 obj.klMean = obj.klMeanRange(klMeanIndex+1);
-                obj.iProj = obj.iProjSet(klMeanIndex+1);
+                obj.iProj = obj.iProjCell{klMeanIndex+1};
             end
             
         end

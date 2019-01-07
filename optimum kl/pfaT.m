@@ -19,6 +19,7 @@ classdef pfaT
         
         function pfa = test(obj)
             if obj.it == 0
+                pfa = -1;
                 return
             end
             

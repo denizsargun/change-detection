@@ -11,22 +11,25 @@ classdef meanM < handle
         numberOfSettings
         pdT
         pfaT
+        timeT
         utility
     end
     
     methods
         function obj = meanM(experiment)
             obj.ex = experiment;
+            obj.it = obj.ex.it(2,:);
             obj.meanMeanRange = obj.ex.meanMeanRange;
             obj.meanMean = obj.meanMeanRange(1);
             obj.methodName = 'meanM';
-            obj.numberOfSettings = length(meanMeanRange);
+            obj.numberOfSettings = length(obj.meanMeanRange);
             obj.utility = obj.ex.utility;
             % tests need ex and utility objects
             obj.delayT = delayT(obj);
             obj.mtbfT = mtbfT(obj);
             obj.pdT = pdT(obj);
             obj.pfaT = pfaT(obj);
+            obj.timeT = timeT(obj);
         end
         
         function isChange = is_change(obj,dist)
