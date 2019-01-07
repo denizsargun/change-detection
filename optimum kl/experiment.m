@@ -31,14 +31,14 @@ classdef experiment < handle
             fclose(fid);
             
             obj.alphabet = [-2 -1 0 1 2];
-            obj.beta = .5;
+            obj.beta = .7;
             obj.glrThrRange = 2.^(0:999.25:10)';
-            obj.it = [1 1 0 0 0; ... % klM pfa, pd, mtbf, delay, time
+            obj.it = [2e4 2e4 0 0 0; ... % klM pfa, pd, mtbf, delay, time
                 0 0 0 0 0; ... % meanM pfa, pd, mtbf, delay, time
                 0 0 0 0 0; ... % lmpM pfa, pd, mtbf, delay, time
                 0 0 0 0 0];    % glrM pfa, pd, mtbf, delay, time
-            obj.klMeanRange = (0:999.05:0.5)';
-            obj.klRadiusRange = 2.^(-9:9991:-1)';
+            obj.klMeanRange = (-2:.05:2)';
+            obj.klRadiusRange = 2.^(-6:1:-4)';
             obj.lmpThrRange = -2.^(0:999.2:2.4)';
             % default MaxFunEvals is 100*numberOfVariables = 500
             obj.maxFunEvals = 500;
