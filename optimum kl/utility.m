@@ -50,29 +50,29 @@ classdef utility < handle
             % create excel file
             % use xlwrite insted of xlswrite
             xlwrite(obj.ex.storageFile,{'create excel file'});
-            xlwrite(obj.ex.storageFile,'alphabet',1,'B1');
+            xlwrite(obj.ex.storageFile,{'alphabet'},1,'B1');
             xlwrite(obj.ex.storageFile,obj.ex.alphabet,1,'B2');
-            xlwrite(obj.ex.storageFile,'beta',1,'C1');
+            xlwrite(obj.ex.storageFile,{'beta'},1,'C1');
             xlwrite(obj.ex.storageFile,obj.ex.beta,1,'C2');
-            xlwrite(obj.ex.storageFile,'glrThrRange',1,'D1');
+            xlwrite(obj.ex.storageFile,{'glrThrRange'},1,'D1');
             xlwrite(obj.ex.storageFile,obj.ex.glrThrRange,1,'D2');
-            xlwrite(obj.ex.storageFile,'klMeanRange',1,'E1');
+            xlwrite(obj.ex.storageFile,{'klMeanRange'},1,'E1');
             xlwrite(obj.ex.storageFile,obj.ex.klMeanRange,1,'E2');
-            xlwrite(obj.ex.storageFile,'klRadiusRange',1,'F1');
+            xlwrite(obj.ex.storageFile,{'klRadiusRange'},1,'F1');
             xlwrite(obj.ex.storageFile,obj.ex.klRadiusRange,1,'F2');
-            xlwrite(obj.ex.storageFile,'lmpThrRange',1,'G1');
+            xlwrite(obj.ex.storageFile,{'lmpThrRange'},1,'G1');
             xlwrite(obj.ex.storageFile,obj.ex.lmpThrRange,1,'G2');
-            xlwrite(obj.ex.storageFile,'meanMeanRange',1,'H1');
+            xlwrite(obj.ex.storageFile,{'meanMeanRange'},1,'H1');
             xlwrite(obj.ex.storageFile,obj.ex.meanMeanRange,1,'H2');
-            xlwrite(obj.ex.storageFile,'it',1,'I1');
+            xlwrite(obj.ex.storageFile,{'it'},1,'I1');
             xlwrite(obj.ex.storageFile,obj.ex.it(:),1,'I2');
-            xlwrite(obj.ex.storageFile,'sampleSize',1,'J1');
+            xlwrite(obj.ex.storageFile,{'sampleSize'},1,'J1');
             xlwrite(obj.ex.storageFile,obj.ex.sampleSize,1,'J2');
-            xlwrite(obj.ex.storageFile,'unchangedDist',1,'K1');
+            xlwrite(obj.ex.storageFile,{'unchangedDist'},1,'K1');
             xlwrite(obj.ex.storageFile,obj.ex.unchangedDist,1,'K2');
-            xlwrite(obj.ex.storageFile,'maxIter',1,'L1');
+            xlwrite(obj.ex.storageFile,{'maxIter'},1,'L1');
             xlwrite(obj.ex.storageFile,obj.ex.maxIter,1,'L2');
-            xlwrite(obj.ex.storageFile,'maxFunEvals',1,'M1');
+            xlwrite(obj.ex.storageFile,{'maxFunEvals'},1,'M1');
             xlwrite(obj.ex.storageFile,obj.ex.maxFunEvals,1,'M2');
             
             % unchanged dist
