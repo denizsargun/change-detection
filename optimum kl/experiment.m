@@ -33,7 +33,7 @@ classdef experiment < handle
             obj.alphabet = [-2 -1 0 1 2];
             obj.beta = .7;
             obj.glrThrRange = 2.^(0:999.25:10)';
-            obj.it = [2e4 2e4 0 0 0; ... % klM pfa, pd, mtbf, delay, time
+            obj.it = [2e1 2e1 0 0 0; ... % klM pfa, pd, mtbf, delay, time
                 0 0 0 0 0; ... % meanM pfa, pd, mtbf, delay, time
                 0 0 0 0 0; ... % lmpM pfa, pd, mtbf, delay, time
                 0 0 0 0 0];    % glrM pfa, pd, mtbf, delay, time
@@ -46,7 +46,7 @@ classdef experiment < handle
             obj.maxIter = 400;
             obj.meanMeanRange = (-1:999.05:1)';
             obj.methodNames = {'klM', 'meanM', 'lmpM', 'glrM'};
-            obj.sampleSize = 20;
+            obj.sampleSize = 1000;
             obj.testNames = {'pfaT','pdT','mtbfT','delayT','timeT'};
             obj.unchangedDist = 1/5*ones(5,1);
             obj.utility = utility(obj);

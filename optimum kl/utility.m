@@ -177,8 +177,8 @@ classdef utility < handle
             % select a distribution with mean >= beta at uniformly random
             % realizable with sampleSize samples
             numberOfTrials = 0;
-            err = inf;
-            while mean < err
+            err = -inf;
+            while 0 < err
                 dist = obj.uniformly_random_dist();
                 err = mean-obj.mean(dist);
                 numberOfTrials = numberOfTrials+1;
