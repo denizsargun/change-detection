@@ -28,7 +28,7 @@ classdef pdT
             numberOfDetections = 0;
             for i = 1:obj.it
                 obj.changedDist = ...
-                    obj.utility.random_dist_mean(obj.ex.beta);
+                    obj.utility.random_dist_mean_NEW(obj.ex.beta);
                 dist = obj.utility.realize(obj.changedDist);
                 numberOfDetections = numberOfDetections ...
                     +obj.method.is_change(dist);

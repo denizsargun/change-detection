@@ -166,6 +166,7 @@ classdef utility < handle
             p = p*prod(dist.^(obj.ex.sampleSize*emp_dist));
         end
         
+        % DO NOT USE THIS FUNCTION: DESCRIPTION IS INCORRECT!!!
         function dist = uniformly_random_dist(obj)
             % select a distribution at uniformly random realizable with
             % sampleSize samples
@@ -173,6 +174,7 @@ classdef utility < handle
             dist = obj.realize(uniDist);
         end
         
+        % DO NOT USE THIS FUNCTION: DESCRIPTION IS INCORRECT!!!
         function [dist,numberOfTrials] = random_dist_mean(obj,mean)
             % select a distribution with mean >= beta at uniformly random
             % realizable with sampleSize samples
@@ -180,6 +182,27 @@ classdef utility < handle
             err = inf;
             while 0 < err
                 dist = obj.uniformly_random_dist();
+                err = mean-obj.mean(dist);
+                numberOfTrials = numberOfTrials+1;
+            end
+            
+        end
+        
+        function dist = uniformly_random_dist_NEW(obj)
+            % select a distribution at uniformly random
+            l = obj.ex.sampleSize-1;
+            seed = rand(l,1);
+            sorted = [0; sort(seed); 1];
+            preDist = sorted-circshift(sorted,1);
+            dist = preDist(2:end);
+        end
+        
+        function [dist,numberOfTrials] = random_dist_mean_NEW(obj,mean)
+            % select a distribution with mean >= beta at uniformly random
+            numberOfTrials = 0;
+            err = inf;
+            while 0 < err
+                dist = obj.uniformly_random_dist_NEW();
                 err = mean-obj.mean(dist);
                 numberOfTrials = numberOfTrials+1;
             end

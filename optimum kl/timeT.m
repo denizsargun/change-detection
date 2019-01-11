@@ -25,7 +25,7 @@ classdef timeT
             
             totalTime = 0;
             for i = 1:obj.it
-                dist = obj.utility.uniformly_random_dist();
+                dist = obj.utility.uniformly_random_dist_NEW();
                 empDist = obj.utility.realize(dist);
                 time = tic;
                 % no need to assign the output isChange
