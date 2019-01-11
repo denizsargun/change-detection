@@ -190,7 +190,7 @@ classdef utility < handle
         
         function dist = uniformly_random_dist_NEW(obj)
             % select a distribution at uniformly random
-            l = obj.ex.sampleSize-1;
+            l = obj.ex.alphabetSize-1;
             seed = rand(l,1);
             sorted = [0; sort(seed); 1];
             preDist = sorted-circshift(sorted,1);
