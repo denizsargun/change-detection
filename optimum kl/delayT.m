@@ -30,7 +30,7 @@ classdef delayT
                 alarmTime = 0;
                 detected = 0;
                 obj.changedDist = ...
-                    obj.utility.random_dist_mean(obj.ex.beta);
+                    obj.utility.random_dist_mean_NEW(obj.ex.beta);
                 while ~detected
                     dist = obj.utility.realize(obj.changedDist);
                     alarmTime = alarmTime+obj.ex.sampleSize;
