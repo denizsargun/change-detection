@@ -28,10 +28,6 @@ classdef runner < handle
         function runMethod(obj,method)
             for i = 1:method.numberOfSettings
                 for j = 1:length(obj.ex.testNames)
-                    if method.it(j) == 0
-                        continue % pass this test and continue
-                    end
-                    
                     testName = obj.ex.testNames{j};
                     testString = strcat('method.',testName,'.test');
                     output = eval(testString);
