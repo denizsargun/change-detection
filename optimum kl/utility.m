@@ -36,9 +36,14 @@ classdef utility < handle
             % excel file
             date = clock;
             date(6) = round(date(6));
-            dateName = mat2str(date);
-            dateName = dateName(2:end-1);
-            dateName = strrep(dateName,' ','_');
+            lessThan = date<10;
+            dateName = string(date);
+            for i = 1:6
+                if lessThan(i) == 1
+                    dateName(i) = strcat("0",dateName(i));
+                end
+            end
+            dateName = strjoin(dateName,'_');
             % try .xls or .xlsx
             obj.ex.storageFile = strcat('experiment','_',dateName,'.xls');
             % add POI library to java path to use xlwrite
