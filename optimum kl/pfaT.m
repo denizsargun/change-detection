@@ -18,11 +18,6 @@ classdef pfaT
         end
         
         function pfa = test(obj)
-            if obj.it == 0
-                pfa = -1;
-                return
-            end
-            
             % probability of false alarm
             numberOfFalseAlarms = 0;
             for i = 1:obj.it

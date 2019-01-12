@@ -18,11 +18,6 @@ classdef timeT
         end
         
         function time = test(obj)
-            if obj.it == 0
-                time = -1;
-                return
-            end
-            
             totalTime = 0;
             for i = 1:obj.it
                 dist = obj.utility.uniformly_random_dist_NEW();

@@ -19,11 +19,6 @@ classdef delayT
         end
         
         function delay = test(obj)
-            if obj.it == 0
-                delay = -1;
-                return
-            end
-            
             % delay
             totalDelay = 0;
             for i = 1:obj.it

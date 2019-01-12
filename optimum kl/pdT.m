@@ -19,11 +19,6 @@ classdef pdT
         end
         
         function pd = test(obj)
-            if obj.it == 0
-                pd = -1;
-                return
-            end
-            
             % probability of detection
             numberOfDetections = 0;
             for i = 1:obj.it

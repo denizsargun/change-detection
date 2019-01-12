@@ -18,11 +18,6 @@ classdef mtbfT
         end
         
         function mtbf = test(obj)
-            if obj.it == 0
-                mtbf = -1;
-                return
-            end
-            
             % mean time between failures
             totalTimeToFailure = 0;
             for i = 1:obj.it
