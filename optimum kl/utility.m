@@ -45,7 +45,8 @@ classdef utility < handle
             end
             dateName = strjoin(dateName,'_');
             % try .xls or .xlsx
-            obj.ex.storageFile = strcat('experiment','_',dateName,'.xls');
+            obj.ex.storageFile = ...
+                char(strcat('experiment','_',dateName,'.xls'));
             % add POI library to java path to use xlwrite
             javaaddpath('poi_library/poi-3.8-20120326.jar');
             javaaddpath('poi_library/poi-ooxml-3.8-20120326.jar');

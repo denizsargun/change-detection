@@ -36,11 +36,16 @@ classdef utility < handle
             % excel file
             date = clock;
             date(6) = round(date(6));
-            dateName = mat2str(date);
-            dateName = dateName(2:end-1);
-            dateName = strrep(dateName,' ','_');
+            lessThan = date<10;
+            dateName = string(date);
+            for i = 1:6
+                if lessThan(i) == 1
+                    dateName(i) = strcat("0",dateName(i));
+                end
+            end
+            dateName = strjoin(dateName,'_');
             % try .xls or .xlsx
-            obj.ex.storageFile = strcat('experiment','_',dateName,'.xls');
+            obj.ex.storageFile = chastrcat('experiment','_',dateName,'.xls');
             % add POI library to java path to use xlwrite
             javaaddpath('poi_library/poi-3.8-20120326.jar');
             javaaddpath('poi_library/poi-ooxml-3.8-20120326.jar');
@@ -190,7 +195,7 @@ classdef utility < handle
         
         function dist = uniformly_random_dist_NEW(obj)
             % select a distribution at uniformly random
-            l = obj.ex.sampleSize-1;
+            l = obj.ex.alphabetSize-1;
             seed = rand(l,1);
             sorted = [0; sort(seed); 1];
             preDist = sorted-circshift(sorted,1);
@@ -199,11 +204,10 @@ classdef utility < handle
         
         function [dist,numberOfTrials] = random_dist_mean_NEW(obj,mean)
             % select a distribution with mean >= beta at uniformly random
-
             numberOfTrials = 0;
             err = inf;
             while 0 < err
-                dist = obj.uniformly_random_dist();
+                dist = obj.uniformly_random_dist_NEW();
                 err = mean-obj.mean(dist);
                 numberOfTrials = numberOfTrials+1;
             end
