@@ -37,16 +37,16 @@ classdef experiment < handle
                 0 0 0 0 0; ... % meanM pfa, pd, mtbf, delay, time
                 0 0 0 0 0; ... % lmpM pfa, pd, mtbf, delay, time
                 0 0 0 0 0];    % glrM pfa, pd, mtbf, delay, time
-            obj.klMeanRange = (obj.beta:.06:max(obj.alphabet))';
-            obj.klRadiusRange = 2.^(-8:1:0)';
+            obj.klMeanRange = (0:.05:max(obj.alphabet))';
+            obj.klRadiusRange = 2.^(-8:1:-3)';
             obj.lmpThrRange = -2.^(0:.2:2.4)';
             % default MaxFunEvals is 100*numberOfVariables = 500
             obj.maxFunEvals = 500;
             % default MaxIter is 400
             obj.maxIter = 400;
-            obj.meanMeanRange = (-1:.05:1)';
+            obj.meanMeanRange = (obj.beta:.06:max(obj.alphabet))';
             obj.methodNames = {'klM', 'meanM', 'lmpM', 'glrM'};
-            obj.sampleSize = 50;
+            obj.sampleSize = 25;
             obj.testNames = {'pfaT','pdT','mtbfT','delayT','timeT'};
             obj.unchangedDist = 1/5*ones(5,1);
             obj.utility = utility(obj);
