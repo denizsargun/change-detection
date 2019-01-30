@@ -26,9 +26,9 @@ classdef experiment < handle
     methods
         function obj = experiment()
             % save current folder name
-            fid = fopen('directory.txt','w');
-            fprintf(fid,pwd);
-            fclose(fid);
+            % fid = fopen('directory.txt','w');
+            % fprintf(fid,pwd);
+            % fclose(fid);
             
             obj.alphabet = [-2 -1 0 1 2];
             obj.beta = .5;
@@ -54,7 +54,7 @@ classdef experiment < handle
             obj.writer = writer(obj);
             % runner is the last obj to be defined
             obj.runner = runner(obj);
-            obj.runner.runEx;
+            % obj.runner.runEx;
         end
         
     end
