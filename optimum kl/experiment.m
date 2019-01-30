@@ -36,7 +36,7 @@ classdef experiment < handle
             obj.it = 1e4*[0 0 0 0 0; ... % klM pfa, pd, mtbf, delay, time
                 0 0 0 0 0; ... % meanM pfa, pd, mtbf, delay, time
                 0 0 0 0 0; ... % lmpM pfa, pd, mtbf, delay, time
-                1 1 0 0 0];    % glrM pfa, pd, mtbf, delay, time
+                1 1 1 1 1];    % glrM pfa, pd, mtbf, delay, time
             obj.klMeanRange = (0:.05:max(obj.alphabet))';
             obj.klRadiusRange = 2.^(-8:1:-3)';
             obj.lmpThrRange = -2.^(0:.2:2.4)';
@@ -54,7 +54,7 @@ classdef experiment < handle
             obj.writer = writer(obj);
             % runner is the last obj to be defined
             obj.runner = runner(obj);
-            % obj.runner.runEx;
+            obj.runner.runEx;
         end
         
     end

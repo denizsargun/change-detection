@@ -149,9 +149,9 @@ classdef utility < handle
                 nonlcon = [];
                 % options = ...
                 %   optimoptions('fmincon','MaxFunEvals',obj.ex.maxFunEvals);
-                options = optimoptions('fmincon','MaxIter',obj.ex.maxIter);
+                options = optimoptions('fmincon','MaxIter',obj.ex.maxIter,'Display','off');
                 mProj = fmincon(fun,x0,A,b, ...
-                    Aeq,beq,lb,ub,nonlcon,options,'Display','off');
+                    Aeq,beq,lb,ub,nonlcon,options);
             end
             
         end
