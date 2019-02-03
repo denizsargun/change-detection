@@ -1,5 +1,6 @@
 classdef timeScaling < handle
     % test the time complexity scaling with alphabet size
+    % this code is RUDIMENTARY
     properties
         alphabetSizes % chose odd numbers
         ex

@@ -50,9 +50,16 @@ classdef klM < handle
         function isChange = is_change(obj,dist)
             % decide change if mean and kl distance is above threshold
             % 0/1 output
+            isChange = 0;
             meanChange = obj.mean_change(dist);
-            klChange = obj.kl_change(dist);
-            isChange = and(meanChange,klChange);
+            if meanChange
+                klChange = obj.kl_change(dist);
+                    if klChange
+                        isChange = 1;
+                    end
+                    
+            end
+            
         end
         
         function meanChange = mean_change(obj,dist)
