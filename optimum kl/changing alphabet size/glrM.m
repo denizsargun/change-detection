@@ -32,11 +32,13 @@ classdef glrM < handle
             obj.timeT = timeT(obj);
         end
         
-        function isChange = is_change(obj,dist)
+        function [isChange, time] = is_change(obj,dist)
+            tic
             obj.mProj = obj.utility.m_proj(dist,obj.ex.beta);
             score = obj.utility.emp_prob_calc(obj.mProj,dist) ...
                 /obj.utility.emp_prob_calc(obj.ex.unchangedDist,dist);
             isChange = score >= obj.glrThr;
+            time = toc;
         end
         
         function update(obj)

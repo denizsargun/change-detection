@@ -47,9 +47,10 @@ classdef klM < handle
             obj.timeT = timeT(obj);
         end
         
-        function isChange = is_change(obj,dist)
+        function [isChange, time] = is_change(obj,dist)
             % decide change if mean and kl distance is above threshold
             % 0/1 output
+            tic
             isChange = 0;
             meanChange = obj.mean_change(dist);
             if meanChange
@@ -57,6 +58,7 @@ classdef klM < handle
                 isChange = klChange;
             end
             
+            time = toc;
         end
         
         function meanChange = mean_change(obj,dist)

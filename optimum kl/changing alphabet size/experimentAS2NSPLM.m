@@ -36,9 +36,9 @@ classdef experimentAS2NSPLM < handle
             obj.alphabet = -2^(n-1)+1/2:2^(n-1)-1/2;
             obj.beta = 0;
             obj.glrThrRange = 0;
-            obj.it = 1e1*[0 0 0 0 0; ... % klM pfa, pd, mtbf, delay, time
-                0 0 0 0 0; ... % meanM pfa, pd, mtbf, delay, time
-                0 0 0 0 0; ... % lmpM pfa, pd, mtbf, delay, time
+            obj.it = 1e1*[0 0 0 0 1; ... % klM pfa, pd, mtbf, delay, time
+                0 0 0 0 1; ... % meanM pfa, pd, mtbf, delay, time
+                0 0 0 0 1; ... % lmpM pfa, pd, mtbf, delay, time
                 0 0 0 0 1];    % glrM pfa, pd, mtbf, delay, time
             obj.klMeanRange = [-inf, max(obj.alphabet)];
             obj.klRadiusRange = 0;

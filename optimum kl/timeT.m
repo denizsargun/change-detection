@@ -22,10 +22,11 @@ classdef timeT
             for i = 1:obj.it
                 dist = obj.utility.uniformly_random_dist_NEW();
                 empDist = obj.utility.realize(dist);
-                time = tic;
+                tic
                 % no need to assign the output isChange
                 obj.method.is_change(empDist);
-                totalTime = totalTime+toc(time);
+                time = toc;
+                totalTime = totalTime+time;
             end
             
            time = totalTime/obj.it;

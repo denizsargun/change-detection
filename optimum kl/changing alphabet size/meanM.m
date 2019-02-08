@@ -32,8 +32,10 @@ classdef meanM < handle
             obj.timeT = timeT(obj);
         end
         
-        function isChange = is_change(obj,dist)
+        function [isChange, time] = is_change(obj,dist)
+            tic
             isChange = obj.utility.mean(dist) >= obj.meanMean;
+            time = toc;
         end
         
         function update(obj)

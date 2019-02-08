@@ -44,11 +44,13 @@ classdef lmpM < handle
             obj.lmpDir = obj.iProj-obj.ex.unchangedDist;
         end
         
-        function isChange = is_change(obj,dist)
+        function [isChange, time] = is_change(obj,dist)
+            tic
             score = obj.ex.sampleSize*dist' ...
                 *log(obj.iProj./obj.ex.unchangedDist) ...
                 +log(dist'*(obj.lmpDir./obj.iProj));
             isChange = score >= obj.lmpThr;
+            time = toc;
         end
         
         function update(obj)
