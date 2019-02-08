@@ -54,10 +54,7 @@ classdef klM < handle
             meanChange = obj.mean_change(dist);
             if meanChange
                 klChange = obj.kl_change(dist);
-                    if klChange
-                        isChange = 1;
-                    end
-                    
+                isChange = klChange;
             end
             
         end
