@@ -27,7 +27,7 @@ classdef timeT
                 totalTime = totalTime+time;
             end
             
-           time = totalTime/obj.it;
+            time = totalTime/obj.it;
         end
         
     end
