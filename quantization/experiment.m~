@@ -1,8 +1,7 @@
-classdef experimentAS2NSPLM < handle
+% experiment to measure the effect of quantization
+% quantize N(0,1) using 2^{n+1} bins from -2^n to 2^n
+classdef experiment < handle
     % hold utility object and variables
-    % AS refers to alphabet size
-    % 2N refers to alphabet size of 2^N, N>0
-    % SPL refers to sample per letter = M
     properties
         alpha
         alphabet
@@ -17,41 +16,41 @@ classdef experimentAS2NSPLM < handle
         maxIter
         meanMeanRange
         methodNames
+        preChange
         runner
         sampleSize
         storageFile
         testNames
-        unchangedDist
         utility % utility toolbox
         writer
     end
     
     methods
-        function obj = experimentAS2NSPLM(n,m)
+        function obj = experiment()
             % save current folder name
             % fid = fopen('directory.txt','w');
             % fprintf(fid,pwd);
             % fclose(fid);
             
-            obj.alphabet = -2^(n-1)+1/2:2^(n-1)-1/2;
-            obj.beta = 0;
-            obj.glrThrRange = 0;
-            obj.it = 1e1*[0 0 0 0 1; ... % klM pfa, pd, mtbf, delay, time
-                0 0 0 0 1; ... % meanM pfa, pd, mtbf, delay, time
+            obj.alphabet = [-1 0 1];
+            obj.beta = 1/4;
+            obj.glrThrRange = 2.^(0:.25:10)';
+            obj.it = 1e4*[1 1 0 0 0; ... % klM pfa, pd, mtbf, delay, time
+                1 1 0 0 0; ... % meanM pfa, pd, mtbf, delay, time
                 0 0 0 0 0; ... % lmpM pfa, pd, mtbf, delay, time
-                0 0 0 0 1];    % glrM pfa, pd, mtbf, delay, time
-            obj.klMeanRange = min(obj.alphabet);
-            obj.klRadiusRange = 0;
-            obj.lmpThrRange = 0;
+                0 0 0 0 0];    % glrM pfa, pd, mtbf, delay, time
+            obj.klMeanRange = (0:.05:max(obj.alphabet))';
+            obj.klRadiusRange = 2.^(-8:1:-3)';
+            obj.lmpThrRange = -2.^(0:.2:2.4)';
             % default MaxFunEvals is 100*numberOfVariables = 500
-            obj.maxFunEvals = 100*2^n;
+            obj.maxFunEvals = 500;
             % default MaxIter is 400
             obj.maxIter = 400;
-            obj.meanMeanRange = 0;
+            obj.meanMeanRange = (min(obj.alphabet):.05:max(obj.alphabet))';
             obj.methodNames = {'klM', 'meanM', 'lmpM', 'glrM'};
-            obj.sampleSize = m*2^n;
+            obj.quantParam = 2^5;
+            obj.sampleSize = 25;
             obj.testNames = {'pfaT','pdT','mtbfT','delayT','timeT'};
-            obj.unchangedDist = 2^(-n)*ones(2^n,1);
             obj.utility = utility(obj);
             obj.utility.setup()
             obj.writer = writer(obj);
