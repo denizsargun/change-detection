@@ -166,7 +166,7 @@ classdef utility < handle
             if obj.mean(dist) >= mean
                 mProj = dist;
             else
-                epsilon = 1E-5;
+                epsilon = 1E-3;
                 lambdaLim = [0; max(obj.ex.alphabet)/epsilon^2];
                 error = inf;
                 while abs(error)>epsilon
