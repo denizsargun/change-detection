@@ -27,20 +27,11 @@ classdef utility < handle
         
         % initialize
         function setup(obj)
-            qp = obj.ex.quantParam;
-            partition = (-qp:1/qp:qp)';
-            q = normcdf(partition(2:end))-normcdf(partition(1:end-1));
-            obj.ex.preChange = q/sum(q);
             % alphabet
             % alphabet is a sorted column vector
-            obj.ex.alphabet = (-qp+1/(2*qp):1/qp:qp-1/(2*qp))';
-            obj.ex.alpha = obj.mean(obj.ex.preChange);
+            obj.ex.alphabet = sort(obj.ex.alphabet(:));
+            obj.ex.alpha = obj.mean(obj.ex.unchangedDist);
             obj.ex.alphabetSize = length(obj.ex.alphabet);
-            
-            % set method parameters
-            obj.ex.klMeanRange = (0:1/qp:max(obj.ex.alphabet))';
-            obj.ex.klRadiusRange = 2.^(-8:1:-3)';
-            
             
             % excel file
             date = clock;
@@ -69,18 +60,30 @@ classdef utility < handle
             xlwrite(obj.ex.storageFile,obj.ex.alphabet,1,'B2');
             xlwrite(obj.ex.storageFile,{'beta'},1,'C1');
             xlwrite(obj.ex.storageFile,obj.ex.beta,1,'C2');
-            xlwrite(obj.ex.storageFile,{'klMeanRange'},1,'D1');
-            xlwrite(obj.ex.storageFile,obj.ex.klMeanRange,1,'D2');
-            xlwrite(obj.ex.storageFile,{'klRadiusRange'},1,'E1');
-            xlwrite(obj.ex.storageFile,obj.ex.klRadiusRange,1,'E2');
-            xlwrite(obj.ex.storageFile,{'meanMeanRange'},1,'F1');
-            xlwrite(obj.ex.storageFile,obj.ex.meanMeanRange,1,'F2');
-            xlwrite(obj.ex.storageFile,{'it'},1,'G1');
-            xlwrite(obj.ex.storageFile,obj.ex.it(:),1,'G2');
-            xlwrite(obj.ex.storageFile,{'sampleSize'},1,'H1');
-            xlwrite(obj.ex.storageFile,obj.ex.sampleSize,1,'H2');
-            xlwrite(obj.ex.storageFile,{'preChange'},1,'I1');
-            xlwrite(obj.ex.storageFile,obj.ex.preChange,1,'I2');
+            xlwrite(obj.ex.storageFile,{'glrThrRange'},1,'D1');
+            xlwrite(obj.ex.storageFile,obj.ex.glrThrRange,1,'D2');
+            xlwrite(obj.ex.storageFile,{'klMeanRange'},1,'E1');
+            xlwrite(obj.ex.storageFile,obj.ex.klMeanRange,1,'E2');
+            xlwrite(obj.ex.storageFile,{'klRadiusRange'},1,'F1');
+            xlwrite(obj.ex.storageFile,obj.ex.klRadiusRange,1,'F2');
+            xlwrite(obj.ex.storageFile,{'lmpThrRange'},1,'G1');
+            xlwrite(obj.ex.storageFile,obj.ex.lmpThrRange,1,'G2');
+            xlwrite(obj.ex.storageFile,{'meanMeanRange'},1,'H1');
+            xlwrite(obj.ex.storageFile,obj.ex.meanMeanRange,1,'H2');
+            xlwrite(obj.ex.storageFile,{'it'},1,'I1');
+            xlwrite(obj.ex.storageFile,obj.ex.it(:),1,'I2');
+            xlwrite(obj.ex.storageFile,{'sampleSize'},1,'J1');
+            xlwrite(obj.ex.storageFile,obj.ex.sampleSize,1,'J2');
+            xlwrite(obj.ex.storageFile,{'unchangedDist'},1,'K1');
+            xlwrite(obj.ex.storageFile,obj.ex.unchangedDist,1,'K2');
+            xlwrite(obj.ex.storageFile,{'maxIter'},1,'L1');
+            xlwrite(obj.ex.storageFile,obj.ex.maxIter,1,'L2');
+            xlwrite(obj.ex.storageFile,{'maxFunEvals'},1,'M1');
+            xlwrite(obj.ex.storageFile,obj.ex.maxFunEvals,1,'M2');
+            
+            % unchanged dist
+            % column vector of dist
+            obj.ex.unchangedDist = obj.ex.unchangedDist(:);
         end
         
         % utilities
