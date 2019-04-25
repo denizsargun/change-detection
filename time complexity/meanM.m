@@ -1,18 +1,14 @@
 classdef meanM < handle
     % mean test
     properties
-        delayT
         ex
         it
         meanMean
         meanMeanRange
         methodName
-        mtbfT
         numberOfSettings
-        pdT
-        pfaT
         timeT
-        utility
+        util
     end
     
     methods
@@ -23,17 +19,15 @@ classdef meanM < handle
             obj.meanMean = obj.meanMeanRange(1);
             obj.methodName = 'meanM';
             obj.numberOfSettings = length(obj.meanMeanRange);
-            obj.utility = obj.ex.utility;
+            obj.util = obj.ex.util;
             % tests need ex and utility objects
-            obj.delayT = delayT(obj);
-            obj.mtbfT = mtbfT(obj);
-            obj.pdT = pdT(obj);
-            obj.pfaT = pfaT(obj);
             obj.timeT = timeT(obj);
         end
         
-        function isChange = is_change(obj,dist)
-            isChange = obj.utility.mean(dist) >= obj.meanMean;
+        function [isChange, time] = is_change(obj,dist)
+            tic
+            isChange = obj.util.mean(dist) >= obj.meanMean;
+            time = toc;
         end
         
         function update(obj)

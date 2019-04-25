@@ -5,31 +5,29 @@ classdef timeT
         it
         method
         testName
-        utility
+        util
     end
     
     methods
         function obj = timeT(method)
             obj.method = method;
             obj.ex = obj.method.ex;
-            obj.it = obj.method.it(5);
+            obj.it = obj.method.it(1);
             obj.testName = 'timeT';
-            obj.utility = obj.method.utility;
+            obj.util = obj.method.util;
         end
         
         function time = test(obj)
             totalTime = 0;
             for i = 1:obj.it
-                dist = obj.utility.uniformly_random_dist_NEW();
-                empDist = obj.utility.realize(dist);
-                tic
+                dist = obj.util.uniformly_random_dist_NEW();
+                empDist = obj.util.realize(dist);
                 % no need to assign the output isChange
-                obj.method.is_change(empDist);
-                time = toc;
+                [~, time] = obj.method.is_change(empDist);
                 totalTime = totalTime+time;
             end
             
-           time = totalTime/obj.it;
+            time = totalTime/obj.it;
         end
         
     end
