@@ -196,12 +196,13 @@ classdef utility < handle
         end
         
         function [dist,numberOfTrials] = random_dist_mean_NEW(obj,mean)
-            % select a distribution with mean >= beta at uniformly random
+            % select a distribution with mean ~ beta at uniformly random
             numberOfTrials = 0;
+            eps = 1e-3;
             err = inf;
-            while 0 < err
+            while eps < err
                 dist = obj.uniformly_random_dist_NEW();
-                err = mean-obj.mean(dist);
+                err = abs(mean-obj.mean(dist));
                 numberOfTrials = numberOfTrials+1;
             end
             
