@@ -1,4 +1,4 @@
-classdef writer < handle
+ classdef writer < handle
     properties
         ex
         storageFile
