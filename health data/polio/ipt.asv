@@ -1,0 +1,34 @@
+classdef ipt
+    properties
+        preMean % pre change mean of reported cases per million people
+        numBin = 10;
+        eps = 10;
+        iniVac % initial vaccine coverage
+        chnVac % definition of change in vaccine coverage
+        edges
+        thr;
+    end
+    
+    methods
+        function obj = ipt(iniVac,preMean)
+            obj.iniVac = iniVac;
+            obj.chnVac = obj.iniVac+obj.eps;
+            obj.preMean = preMean(obj.iniVac);
+            % DO EQUILIKELY BINNING HERE
+            % obj.edges = ...;
+            obj.thr = [MEANTHR;KLTHR];
+        end
+        
+        function isChange(newSam)
+            win = ;
+            winMean = max(mean(win),0);
+        end
+
+        function d = klDiv(samples,projection)
+            samples = floor(samples);
+            
+        end
+        
+    end
+    
+end

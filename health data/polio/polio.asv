@@ -1,0 +1,132 @@
+%% read data from 3 csv files
+% vpo = {region, code, year, coverage percentage} of polio vaccine coverage of one-year-olds
+vpo = textscan(fileread('polio-vaccine-coverage-of-one-year-olds.csv'),'%s %s %f %f', 'delimiter', ',', 'HeaderLines', 1);
+% nrp = {region, code, year, number of reported cases} of number of reported polio cases
+nrp = textscan(fileread('the-number-of-reported-paralytic-polio-cases.csv'),'%s %s %f %f', 'delimiter', ',', 'HeaderLines', 1);
+% rpm = {region, code, year, cases} of reported polio cases per 1 million people
+rpm = textscan(fileread('reported-paralytic-polio-cases-per-1-million-people.csv'),'%s %s %f %f', 'delimiter', ',', 'HeaderLines', 1);
+% vpo, nrp and rpm have equal sets of regions
+% union(union(setdiff(vpo{1},nrp{1}), setdiff(nrp{1},rpm{1})),setdiff(rpm{1},vpo{1})) is empty
+%%
+data = containers.Map();
+for i = 1:length(vpo{1})
+    if ~any(strcmp(data.keys,vpo{1}{i}))
+        ts = timeseries(vpo{4}(i),vpo{3}(i),'Name','polio vaccine coverage of one-year-olds');
+        ts.TimeInfo.Units = 'Year';
+        data(vpo{1}{i}) = ts;
+    else
+        data(vpo{1}{i}) = addsample(data(vpo{1}{i}),'Data',vpo{4}(i),'Time',vpo{3}(i));
+    end
+
+end
+
+regions = data.keys;
+for i = 1:length(nrp{1})
+    if length(data(nrp{1}{i})) == 1
+        dum = cell(2,1);
+        dum{1} = data(nrp{1}{i});
+        ts = timeseries(nrp{4}(i),nrp{3}(i),'Name','number of reported polio cases');
+        ts.TimeInfo.Units = 'Year';
+        dum{2} = ts;
+        data(nrp{1}{i}) = dum;
+    else
+        dum = data(nrp{1}{i});
+        dum{2} = addsample(dum{2},'Data',nrp{4}(i),'Time',nrp{3}(i));
+        data(nrp{1}{i}) = dum;
+    end
+    
+end
+
+for i = 1:length(rpm{1})
+    if length(data(rpm{1}{i})) == 2
+        dum = cell(3,1);
+        dum(1:2) = data(rpm{1}{i});
+        ts = timeseries(rpm{4}(i),rpm{3}(i),'Name','reported polio cases per 1 million people');
+        ts.TimeInfo.Units = 'Year';
+        dum{3} = ts;
+        data(rpm{1}{i}) = dum;
+    else
+        dum = data(rpm{1}{i});
+        dum{3} = addsample(dum{3},'Data',rpm{4}(i),'Time',rpm{3}(i));
+        data(rpm{1}{i}) = dum;
+    end
+    
+end
+
+%% find the time shift for highest cross-correlation between vaccination % and reports
+% l = length(regions);
+% minCorr = [];
+% for i = 1:l
+%     region = data(regions{i});
+%     vacc = region{1};
+%     rept = region{2};
+%     meanV = mean(region{1}.Data);
+%     meanR = mean(region{2}.Data);
+%     maxShft = max(rept.Time)-min(vacc.Time);
+%     ccrr = zeros(maxShft+1,1);
+%     samp = zeros(maxShft+1,1);
+%     for j = 0:maxShft
+%         for k = 1:length(vacc.Time)
+%             year = vacc.Time(k);
+%             reptYear = year+j;
+%             ind = find(rept.Time == reptYear);
+%             if ~isempty(ind)
+%                 ccrr(j+1) = ccrr(j+1)+(vacc.Data(k)-meanV)*(rept.Data(ind)-meanR);
+%                 samp(j+1) = samp(j+1)+1;
+%             end
+% 
+%         end
+% 
+%     end
+% 
+%     [~,minInd] = min(ccrr./samp);
+%     minCorr = [minCorr; minInd-1];
+% end
+% 
+% % 114 country/region out of 201 have minimum at 0 year time shift
+%%
+vacRep = containers.Map('KeyType','double','ValueType','any');
+% observation of polio reports/ mil. ppl for a given vaccination percentage of 1 y.o. over all regions, years
+for i = 1:length(regions)
+    region = regions{i};
+    dum = data(region);
+    localVpo = dum{1};
+    localRpm = dum{3};
+    for j = 1:length(localVpo.Time)
+        ind = find(localRpm.Time == localVpo.Time(j));
+        if ~isempty(ind)
+            keys = vacRep.keys;
+            if ~any([keys{:}] == localVpo.Data(j))
+                vacRep(localVpo.Data(j)) = localRpm.Data(ind);
+            else
+                vacRep(localVpo.Data(j)) = [vacRep(localVpo.Data(j)); localRpm.Data(ind)];
+            end
+        
+        end
+        
+    end
+    
+end
+
+%%
+keys = vacRep.keys;
+l = length(keys);
+dists = containers.Map('KeyType','double','ValueType','double');
+% exponential distribution fit to histogram of polio reports/ mil. ppl. vs vaccination percentage of 1 y.o.
+for i = 1:l
+    key = keys(i);
+    dum = fitdist(vacRep(key{1}),'Exponential');
+    dists(key{1}) = dum.mu;
+end
+
+%%
+v = values(dists,dists.keys);
+v = [v{:}]';
+k = dists.keys;
+k = [k{:}]';
+distFit = fit(k,v,'exp1');
+%%
+region = regions{1};
+dum = data(region);
+localVpo = dum{1};
+ipt = ipt();
