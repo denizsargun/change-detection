@@ -126,8 +126,65 @@ k = dists.keys;
 k = [k{:}]';
 meanFit = fit(k,v,'exp1');
 %%
-region = regions{1};
-dum = data(region);
-localVpo = dum{1};
-iniVac = localVpo.Data(1);
-ipt = ipt(iniVac,meanFit);
+m = 3;
+n = 3;
+perm = randperm(201);
+r = sort(perm(1:m*n));
+hf = figure;
+for i = 1:m*n
+    i
+    region = regions{r(i)};
+    dum = data(region);
+    localVpo = dum{1};
+    localRpm = dum{3};
+    iniVac = localVpo.Data(1);
+    changePoint = localVpo.Time(find(localVpo.Data > iniVac+10,1));
+    if isempty(changePoint)
+        changePoint = Inf;
+    end
+    
+    test = ipt(iniVac,meanFit);
+    l = length(localRpm.Data);
+    for t = 1:l
+        sam = localRpm.Data(t);
+        test.newSam(sam)
+        if test.change
+            break
+        end
+
+    end
+
+    t
+    if ~test.change
+        alarmPoint = Inf;
+    else
+        alarmPoint = localRpm.Time(t);
+    end
+    
+    num = rem(i,m*n)+m*n*(i==m*n);
+    ha = subplot(m,n,num);
+    yyaxis left
+    plot(localVpo)
+    ylim([0,100])
+    ylabel('')
+    yyaxis right
+    plot(localRpm)
+    xlim([1980,2015])
+    title(region)
+    xlabel('')
+    ylabel('')
+    grid minor
+    % text = "first year is " + localVpo.Time(1) + newline + "initial vaccine coverage percentage is " + iniVac + newline + "change point is " + changePoint + newline + "alarm year is " + alarmPoint;
+    if alarmPoint >= changePoint
+        delay = alarmPoint-changePoint;
+        text = "delay = " + delay;
+    else
+        text = "false alarm";
+    end
+    
+    arrayfun(@(x) pbaspect(x, [2 1 1]), ha);
+    drawnow;
+    pos = arrayfun(@plotboxpos, ha, 'uni', 0);
+    dim = cellfun(@(x) x.*[1 1 0.5 0.5], pos, 'uni',0);
+    annotation(hf,'textbox',dim{1},'String',join(text),'vert', 'bottom','FitBoxToText','on','FontSize',10)
+end
