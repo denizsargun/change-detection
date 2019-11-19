@@ -17,7 +17,7 @@ classdef ipt < handle
     end
     
     methods
-        function obj = ipt(iniVac,meanFit)
+        function obj = ipt(iniVac,meanFit,thr)
             obj.change = 0;
             obj.eps = 10;
             obj.numBin = 10;
@@ -46,9 +46,15 @@ classdef ipt < handle
                 
             end
             
-            dum = (meanKl(obj.numBin)+meanKl2(obj.numBin))/2;
-            klThr = dum/3;
-            obj.thr = [postMean; klThr];
+            % if thr is input, use it, else, use the following
+            if exist('thr','var')
+                obj.thr = thr;
+            else
+                dum = (meanKl(obj.numBin)+meanKl2(obj.numBin))/2;
+                klThr = dum/3;
+                obj.thr = [postMean; klThr];
+            end
+            
             obj.err = min(obj.alpb(2:end)-obj.alpb(1:end-1))/10;
         end
         

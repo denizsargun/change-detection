@@ -1,4 +1,4 @@
-classdef ipt
+classdef ipt < handle
     properties
         alpb % alphabet, representative letters for bins
         change % change, current detection status
@@ -46,8 +46,9 @@ classdef ipt
                 
             end
             
+            % use the following if 
             dum = (meanKl(obj.numBin)+meanKl2(obj.numBin))/2;
-            klThr = dum/5;
+            klThr = dum/3;
             obj.thr = [postMean; klThr];
             obj.err = min(obj.alpb(2:end)-obj.alpb(1:end-1))/10;
         end
@@ -58,7 +59,7 @@ classdef ipt
             if sum(obj.preMean-[obj.win;disSam]) > 0
                 obj.win = [obj.win; disSam];
                 obj.ss = length(obj.win);
-                obj.emp = histcounts(obj.win,obj.edges)/obj.ss;
+                obj.emp = (histcounts(obj.win,obj.edges)/obj.ss)';
                 obj.isChange()
             else
                 obj.win = [];
@@ -116,8 +117,11 @@ classdef ipt
         function out = kl(obj)
             % compute the kl divergence (base e) between empirical distribution
             % obj.window and information projection qStar
-            llr = log(obj.emp./obj.iProj);
-            out = obj.emp'*llr;
+            nonzeroIndex = (obj.emp~=0);
+            dum = obj.emp(nonzeroIndex);
+            dum2 = obj.iProj(nonzeroIndex);
+            llr = log(dum./dum2);
+            out = dum'*llr;
         end
         
     end
