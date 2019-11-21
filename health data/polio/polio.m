@@ -190,34 +190,50 @@ meanFit = fit(k,v,'exp1');
 % end
 
 %%
-l = length(regions);
-meanThrParam = 0;
-dum = (meanKl(obj.numBin)+meanKl2(obj.numBin))/2;
-klThr = dum/3;
+l1 = length(regions);
+meanThrParams = (0:0.25:1)';
+klThrParams = 2.^(-3:2:3)';
+l2 = length(meanThrParams);
+l3 = length(klThrParams);
+delay = zeros(l2,l3,l1);
+runLength = zeros(l2,l3,l1);
 
-for i = 1:l
-    i
-    region = regions{r(i)};
-    dum = data(region);
-    localVpo = dum{1};
-    localRpm = dum{3};
-    iniVac = localVpo.Data(1);
-    changePoint = localVpo.Time(find(localVpo.Data > iniVac+10,1));
-    if isempty(changePoint)
-        changePoint = Inf;
-    end
-    
-    meanThr = WEIGHTED AVERAGE(POST-CHANGE MEAN RPM AND MAX LETTER IN ALPHABET);
-    thr = [meanThr,klThr];
-    test = ipt(iniVac,meanFit,thr);
-    l = length(localRpm.Data);
-    for t = 1:l
-        sam = localRpm.Data(t);
-        test.newSam(sam)
-        if test.change
-            break
+for i = 1:l2
+    for j = 1:l3
+        for k = 1:l1
+            [i,j,k]
+            region = regions{k};
+            dum = data(region);
+            localVpo = dum{1};
+            localRpm = dum{3};
+            iniVac = localVpo.Data(1);
+            changePoint = localVpo.Time(find(localVpo.Data > iniVac+10,1));
+            if isempty(changePoint)
+                changePoint = Inf;
+            end
+            
+            test = ipt(iniVac,meanFit);
+            test.thr(1) = (1-meanThrParams(i))*test.thr(1)+(meanThrParams(i))*test.alpb(end);
+            test.thr(2) = klThrParams(j)*test.thr(2);
+            l4 = length(localRpm.Data);
+            for t = 1:l4
+                sam = localRpm.Data(t);
+                test.newSam(sam);
+                if test.change
+                    break
+                end
+
+            end
+            
+            alarmPoint = localRpm.Time(t);
+            if alarmPoint >= changePoint
+                delay(i,j,k) = alarmPoint-changePoint;
+            else
+                runLength(i,j,k) = alarmPoint-localRpm.Time(1)+1;
+            end
+            
         end
-
+        
     end
     
 end
