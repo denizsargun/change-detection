@@ -197,11 +197,15 @@ l2 = length(meanThrParams);
 l3 = length(klThrParams);
 delay = zeros(l2,l3,l1);
 runLength = zeros(l2,l3,l1);
+total = l1*l2*l3;
+chrono = tic;
 
 for i = 1:l2
     for j = 1:l3
         for k = 1:l1
-            [i,j,k]
+            myTime = toc(chrono);
+            elapsed = (i-1)*l3*l1+(j-1)*l1+k;
+            remainingTime = myTime/elapsed*(total-elapsed)
             region = regions{k};
             dum = data(region);
             localVpo = dum{1};
@@ -234,6 +238,23 @@ for i = 1:l2
             
         end
         
+    end
+    
+end
+
+%%
+figure
+hold on
+for i = 1:l2 % rgbkm
+    for j = 1:l3 % *.o+
+        delayLocal = delay(i,j,:);
+        runLengthLocal = runLength(i,j,:);
+        mask = find(runLengthLocal);
+        mask2 = find(runLengthLocal == 0);
+        x = mean(runLengthLocal(mask));
+        y = mean(delayLocal(mask2));
+        % y = max(delayLocal(mask2));
+        % plot(x,y,'r*')
     end
     
 end
