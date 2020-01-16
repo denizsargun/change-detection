@@ -129,17 +129,21 @@ def measlesVsTrends(measlesDf,trendsDf):
     ax1.tick_params(axis='y', labelcolor=color)
     ax1.set_ylim(bottom=0)
     ax1.grid(b=True, which="major")
+    ax1.legend(loc='upper left')
 
     ax2 = ax1.twinx()
     color = 'tab:blue'
     ax2.set_ylabel('anti-vaccine search trends', color=color, fontsize=20)
-    trendsDf.plot(ax=ax2, color=color, linewidth=5,linestyle=":")
+    trendsDf.plot(ax=ax2, color=color, linewidth=5)
+    ax2.set_yscale('log')
     ax2.tick_params(axis='y', labelcolor=color)
     ax2.set_ylim(bottom=0)
+    ax2.legend(loc='upper right')
 
     # fig.tight_layout()  # otherwise the right y-label is slightly clipped
     # plt.show()
     fig.savefig("/home/denizsargun/Downloads/github/change-detection/health data/measles/measlesReportsAndVaccineSearchTrends.png", bbox_inches='tight',dpi=300)
+    plt.show()
 
 measlesDfs = [measlesYearly(),measlesWeekly()]
 measlesDf = pandas.concat(measlesDfs)
