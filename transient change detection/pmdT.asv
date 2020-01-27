@@ -1,0 +1,43 @@
+classdef pmdT < handle
+    properties
+        alpS % alphabet size
+        dGau % discrete Gaussian sampler
+        dura % duration of the transient change
+        faWi % false alarm window
+        fma % finite moving average test
+        glrt % generalized likelihood ratio test
+        ipt % information projection test
+        saLe % sample length
+        dGau
+        ipt
+        fma
+        glrt
+        dura
+        leng
+    end
+    
+    methods
+        function obj = pmdT()
+            
+            obj.dura = 20;
+            obj.leng = 2*obj.dura-1;
+            obj.fma = fma(1,obj.dura);
+            obj.glrt = glrt(obj.dura);
+            obj.ipt = ipt(obj.dura);
+        end
+        
+        function timS = geTS(obj)
+            timS = obj.dGau.sampl(obj.leng);
+        end
+        
+        function isAl = isAl(obj)
+            timS = obj.geTS();
+            isAl = zeros(3,1);
+            isAl(1) = obj.fma.test(timS);
+            isAl(2) = obj.ipt.test(timS);
+            isAl(3) = obj.glrt.test(timS);
+        end
+        
+    end
+    
+end

@@ -1,10 +1,10 @@
-classdef ipt < handle
+classdef inpT < handle
     properties
         w
     end
     
     methods
-        function obj = ipt(windowLength)
+        function obj = inpT(windowLength)
             obj.w = windowLength;
         end
         

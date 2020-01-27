@@ -1,15 +1,12 @@
-classdef fma < handle
+classdef fmaT < handle
     properties
-        thr
-        flt
-        w
+        thre % threshold
+        wndw % window length
     end
     
     methods
-        function obj = fma(threshold,windowLength)
-            obj.thr = threshold;
-            obj.w = windowLength;
-            obj.flt = tril(triu(ones(200,219)),19);
+        function obj = fmaT(wndw)
+            obj.wndw = wndw;
         end
         
         function isAlarm = test(obj,tmseries)

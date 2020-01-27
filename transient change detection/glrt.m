@@ -1,10 +1,10 @@
-classdef glrt < handle
+classdef glrT < handle
     properties
         w
     end
     
     methods
-        function obj = glrt(windowLength)
+        function obj = glrT(windowLength)
             obj.w = windowLength;
         end
         

@@ -1,18 +1,20 @@
-classdef singleTcdPfa < handle
+classdef pfaT < handle
     properties
-        bb
+        dGau
         ipt
         fma
         glrt
-        m
-        mAlpha
+        dura
+        duAl
+        leng
     end
     
     methods
-        function obj = singleTcdPfa()
-            obj.bb = betaBinom(10,2,3);
-            obj.m = 20;
-            obj.mAlpha = 200;
+        function obj = pfaT()
+            obj.dGau = dGau(11,1);
+            obj.dura = 20;
+            obj.duAl = 200;
+            obj.leng = obj.
             obj.fma = fma(1,obj.m);
             %obj.glrt = glrt(obj.m);
             %obj.ipt = ipt(obj.m);
