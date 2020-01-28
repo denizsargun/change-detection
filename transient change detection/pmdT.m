@@ -3,9 +3,9 @@ classdef pmdT < handle
         alpS % alphabet size
         dGau % discrete Gaussian sampler
         dura % duration of the transient change
-        fmaT % finite moving average test
-        glrT % generalized likelihood ratio test
-        inpT % information projection test
+        fmaM % finite moving average method
+        glrM % generalized likelihood ratio method
+        inpM % information projection method
         saLe % sample length
     end
     
@@ -14,9 +14,9 @@ classdef pmdT < handle
             obj.alpS = 11;
             obj.dura = 20;
             obj.saLe = 2*obj.dura-1;
-            obj.fmaT = fmaT(obj.dura);
-            obj.glrT = glrT(obj.dura);
-            obj.inpT = inpT(obj.dura);
+            obj.fmaM = fmaM(obj);
+            obj.glrM = glrM(obj);
+            obj.inpM = inpM(obj);
         end
         
         function timS = geTS(obj)
@@ -26,9 +26,9 @@ classdef pmdT < handle
         function isAl = isAl(obj)
             timS = obj.geTS();
             isAl = zeros(3,1);
-            isAl(1) = obj.fmaT.test(timS);
-            isAl(2) = obj.glrT.test(timS);
-            isAl(3) = obj.inpT.test(timS);
+            isAl(1) = obj.fmaM.isAl(timS);
+            isAl(2) = obj.glrM.isAl(timS);
+            isAl(3) = obj.inpM.isAl(timS);
         end
         
     end

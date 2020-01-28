@@ -4,6 +4,7 @@ classdef dGau < handle
         cdVc % cumulative distribution vector
         mean
         nBin % number of bins
+        noCo % normalization constant class
         pdVc % probability distribution vector
         varn % variance of continuous Gaussian random variable ~ discrete
     end
@@ -18,8 +19,8 @@ classdef dGau < handle
             obj.nBin = nBin;
             obj.alph = (-(obj.nBin-1)/2:(obj.nBin-1)/2)';
             obj.varn = varn;
-            obj.pdVc = exp(-obj.alph.^2/(2*obj.varn));
-            obj.pdVc = obj.pdVc/sum(obj.pdVc);
+            obj.noCo = noCo(obj);
+            obj.pdVc = obj.noCo.getC(varn)*exp(-obj.alph.^2/(2*obj.varn));
             obj.mean = obj.pdVc'*obj.alph;
             obj.cdVc = cumsum(obj.pdVc);
         end
