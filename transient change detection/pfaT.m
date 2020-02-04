@@ -14,9 +14,10 @@ classdef pfaT < handle
     methods
         function obj = pfaT()
             obj.dGau = dGau(11,1);
-            obj.dura = 20;
-            obj.faWi = 200;
-            obj.saLe = obj.dura+obj.faWi-1;
+            obj.dura = 75;
+            obj.faWi = 760;
+            obj.iter = 1e6;
+            obj.saLe = obj.faWi;
             obj.thrs = (-1:0.01:1)';
             obj.var0 = 1;
             obj.var1 = 1.25;

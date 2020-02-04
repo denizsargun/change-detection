@@ -1,4 +1,5 @@
 classdef noCo < handle
+    % normalization constant
     properties
         alph % alphabet
     end
