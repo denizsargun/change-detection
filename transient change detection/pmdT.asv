@@ -25,12 +25,12 @@ classdef pmdT < handle
             obj.wind = 38;
 %             obj.thrs = 10.^(-3:0.5:2)';
 %             obj.meth = fmaM(obj);
-%             obj.thrs = (40:10:150)';
+%             obj.thrs = (30:10:150)';
 %             obj.meth = glrM(obj);
-            thr1 = 2.^(-2:1)';
-            thr2 = 2.^(-2:1)';
-            [thr1,thr2] = meshgrid(thr1,thr2);
-            obj.thrs = [thr1(:) thr2(:)];
+            thr1 = ;
+            thr2 = ;
+            [X,Y] = meshgrid(p,q);
+            obj.thrs = [X(:) Y(:)];
             obj.meth = inpM(obj);
         end
         
@@ -49,8 +49,7 @@ classdef pmdT < handle
             nThr = size(obj.thrs,1); % number of thresholds
             pmdE = zeros(nThr,1); % pmd estimate
             for i = 1:nThr
-%                 thre = obj.thrs(i); % if single parameter
-                thre = obj.thrs(i,:); % if multi-parameter
+                thre = obj.thrs(i);
                 pmdE(i) = 0;
                 for j = 1:obj.itPo
                     [i,j]
