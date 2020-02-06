@@ -25,10 +25,12 @@ classdef dGau < handle
             obj.cdVc = cumsum(obj.pdVc);
         end
         
-        function samp = samp(obj,k)
-            seed = rand(k,1);
-            comp = repmat(seed,1,obj.nBin) >= repmat(obj.cdVc',k,1);
-            indx = sum(comp,2)+1;
+        function samp = samp(obj,m,n)
+            seed = rand(m,n);
+            lCdV = length(obj.cdVc);
+            cdVc = reshape(obj.cdVc,1,1,lCdV);
+            comp = repmat(seed,1,1,obj.nBin) >= repmat(cdVc,m,n,1);
+            indx = sum(comp,3)+1;
             samp = obj.alph(indx);
         end
         

@@ -9,6 +9,7 @@ classdef pfaT < handle
         thrs % threshold
         var0 % pre-change variance
         var1 % minimum post-change variance
+        wind % window size
     end
     
     methods
@@ -16,34 +17,30 @@ classdef pfaT < handle
             obj.dGau = dGau(11,1);
             obj.dura = 75;
             obj.faWi = 760;
-            obj.iter = 1e6;
+            obj.iter = 1e4;
             obj.saLe = obj.faWi;
-            obj.thrs = (-1:0.01:1)';
+            obj.thrs = 10.^(-3:2)';
             obj.var0 = 1;
             obj.var1 = 1.25;
-            obj.meth = fmaM(obj);
-%             obj.meth = glrM(obj);
+            obj.wind = 38;
+%             obj.meth = fmaM(obj);
+            obj.meth = glrM(obj);
 %             obj.meth = inpM(obj);
         end
         
         function timS = geTS(obj)
-            timS = obj.dGau.sampl(obj.saLe*obj.iter);
+            timS = obj.dGau.samp(obj.iter,obj.saLe);
         end
         
         function pfaE = repe(obj)
-            nThr = length(obj.thrs);
-            isAl = zeros(nThr,obj.iter);
+            nThr = size(obj.thrs,1); % number of thresholds
+            pfaE = zeros(nThr,1); % pfa estimate
             for i = 1:nThr
                 thre = obj.thrs(i);
-                timS = obj.geTS();
-                for j = 1:obj.iter
-                    part = timS((j-1)*obj.saLe+1,j*obj.saLe);
-                    isAl(i,j) = obj.meth.isAl(thre,part);
-                end
-
+                timS = obj.geTS(); % time series
+                pfaE(i) = obj.meth.isAl(thre,timS);
             end
             
-            pfaE = mean(isAl,2);
         end
         
     end

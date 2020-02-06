@@ -3,7 +3,7 @@ classdef fmaM < handle
         aCon % additive constant in log likelihood ratio
         mCon % multiplicative constant in log likelihood ratio
         test
-        wndw % window length
+        wind % window size
     end
     
     methods
@@ -13,16 +13,22 @@ classdef fmaM < handle
             noCo = dGau.noCo;
             var0 = obj.test.var0;
             var1 = obj.test.var1;
-            obj.aCon = log(noCo(var1)/noCo(var0));
+            obj.aCon = log(noCo.getC(var1)/noCo.getC(var0));
             obj.mCon = (var1-var0)/(2*var0*var1);
-            obj.wndw = wndw;
+            obj.wind = obj.test.wind;
         end
         
-        function isAl = isAl(obj,thre,timS)
-            stat = obj.mCon*timS.^2+obj.aCon;
-            movS = movsum(stat,[obj.wndw-1,0]);
-            movS = movS(obj.wndw:end);
-            isAl = any(movS>=thre);
+        function freq = isAl(obj,thre,timS)
+            tSSz = size(timS); % time series' size
+            if rem(tSSz(2),obj.wind) ~= 0
+                return
+            end
+            
+            timS = reshape(timS,tSSz(1),tSSz(2)/obj.wind,obj.wind);
+            stat = obj.mCon*timS.^2+obj.aCon; % statistics
+            aSta = mean(stat,3); % average statistics
+            isAl = any(aSta>=thre,2);
+            freq = mean(isAl); % frequency
         end
         
     end

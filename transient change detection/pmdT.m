@@ -1,6 +1,5 @@
 classdef pmdT < handle
     properties
-        alpS % alphabet size
         dGau % discrete Gaussian sampler
         dura % duration of the transient change
         fmaM % finite moving average method
@@ -11,8 +10,8 @@ classdef pmdT < handle
     
     methods
         function obj = pmdT()
-            obj.alpS = 11;
-            obj.dura = 20;
+            obj.dGau = dGau(11,1);
+            obj.dura = 75;
             obj.saLe = 2*obj.dura-1;
             obj.fmaM = fmaM(obj);
             obj.glrM = glrM(obj);
