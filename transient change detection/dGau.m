@@ -13,7 +13,6 @@ classdef dGau < handle
         function obj = dGau(nBin,varn)
             if varn>2
                 disp("variance is out of bounds")
-                return
             end
             
             obj.nBin = nBin;
@@ -28,8 +27,8 @@ classdef dGau < handle
         function samp = samp(obj,m,n)
             seed = rand(m,n);
             lCdV = length(obj.cdVc);
-            cdVc = reshape(obj.cdVc,1,1,lCdV);
-            comp = repmat(seed,1,1,obj.nBin) >= repmat(cdVc,m,n,1);
+            cdVc = reshape(obj.cdVc,1,1,lCdV); %#ok<PROPLC>
+            comp = repmat(seed,1,1,obj.nBin) >= repmat(cdVc,m,n,1); %#ok<PROPLC>
             indx = sum(comp,3)+1;
             samp = obj.alph(indx);
         end
