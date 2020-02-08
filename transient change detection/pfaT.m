@@ -22,15 +22,15 @@ classdef pfaT < handle
             obj.var0 = 1;
             obj.var1 = 1.75;
             obj.wind = 20;
-%             obj.thrs = 10.^(-3:0.5:2)';
+%             obj.thrs = (-0.05:0.01:0.1)';
 %             obj.meth = fmaM(obj);
-            obj.thrs = (20:1:50)';
-            obj.meth = glrM(obj);
-%             thr1 = 2.^(-2:1)';
-%             thr2 = 2.^(-2:1)';
-%             [thr1,thr2] = meshgrid(thr1,thr2);
-%             obj.thrs = [thr1(:) thr2(:)];
-%             obj.meth = inpM(obj);
+%             obj.thrs = (20:1:50)';
+%             obj.meth = glrM(obj);
+            thr1 = (0.1:0.01:0.2)'; % positive
+            thr2 = 2.^(-3:0.5:2)';
+            [thr1,thr2] = meshgrid(thr1,thr2);
+            obj.thrs = [thr1(:) thr2(:)];
+            obj.meth = inpM(obj);
         end
         
         function timS = geTS(obj)
@@ -41,8 +41,8 @@ classdef pfaT < handle
             nThr = size(obj.thrs,1); % number of thresholds
             pfaE = zeros(nThr,1); % pfa estimate
             for i = 1:nThr
-                thre = obj.thrs(i); % if single parameter
-%                 thre = obj.thrs(i,:); % if multi-parameter
+%                 thre = obj.thrs(i); % if single parameter
+                thre = obj.thrs(i,:); % if multi-parameter
                 timS = obj.geTS(); % time series
                 pfaE(i) = obj.meth.isAl(thre,timS);
             end
