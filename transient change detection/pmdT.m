@@ -27,8 +27,8 @@ classdef pmdT < handle
 %             obj.meth = fmaM(obj);
 %             obj.thrs = (20:1:50)';
 %             obj.meth = glrM(obj);
-            thr1 = (0.1:0.1:0.2)'; % positive
-            thr2 = 2.^(-2:1)';
+            thr1 = (0.1:0.01:0.2)'; % positive
+            thr2 = 2.^(-3:0.5:2)';
             [thr1,thr2] = meshgrid(thr1,thr2);
             obj.thrs = [thr1(:) thr2(:)];
             obj.meth = inpM(obj);
