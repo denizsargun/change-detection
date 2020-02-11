@@ -46,9 +46,9 @@ classdef glrM < handle
             llrM = post./prev;
 %             pdfs = obj.myHi(timS);
 %             stat = sum(pdfs.*llrM,3)*obj.wind;
-            stat = mean(llrM,2);
+            stat = mean(llrM,);
             isAl = stat>thre;
-            isAl = any(isAl,3);
+            isAl = any(isAl,2);
             freq = mean(isAl);
         end
         

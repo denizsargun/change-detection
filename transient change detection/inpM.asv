@@ -46,9 +46,9 @@ classdef inpM < handle
         
         function pdfs = myHi(obj,timS) % my histogram
             tSSi = size(timS); % time series' size
-            pdfs = zeros(tSSi(1),obj.nBin,tSSi(2));
+            pdfs = zeros(tSSi(1),tSSi(2),obj.nBin);
             for i = 1:obj.nBin
-                pdfs(:,i,:) = mean(timS == obj.alph(i),2);
+                pdfs(:,:,i) = mean(timS==obj.alph(i),3);
             end
             
         end
