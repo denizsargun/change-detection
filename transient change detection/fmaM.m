@@ -27,13 +27,13 @@ classdef fmaM < handle
         end
         
         function freq = isAl(obj,thre,timS)
-            tSSz = size(timS); % time series' size
-            if rem(tSSz(2),obj.wind) ~= 0
+            tSSi = size(timS); % time series' size
+            if rem(tSSi(2),obj.wind) ~= 0
                 disp("time series is not multiple of window size")
                 return
             end
             
-            timS = reshape(timS,tSSz(1),obj.wind,tSSz(2)/obj.wind);
+            timS = reshape(timS,tSSi(1),obj.wind,tSSi(2)/obj.wind);
             stat = obj.mCon*timS.^2+obj.aCon; % statistics
             aSta = mean(stat,2); % average statistics
             isAl = any(aSta>=thre,3);

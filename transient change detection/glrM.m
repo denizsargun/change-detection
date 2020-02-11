@@ -5,6 +5,9 @@ classdef glrM < handle
         dgUt % discrete Gaussian distribution utilities
         nBin % number of bins
         test
+        the0 % pre-change theta^2
+        the1 % minimum post-change theta^2
+        var0 % pre-change variance
         var1 % minimum post-change variance
         wind % window length
     end
@@ -16,25 +19,28 @@ classdef glrM < handle
             obj.alph = obj.dGau.alph;
             obj.dgUt = obj.dGau.dgUt;
             obj.nBin = obj.dGau.nBin;
+            obj.var0 = obj.test.var0;
             obj.var1 = obj.test.var1;
+            obj.the0 = obj.dgUt.VtoT(obj.var0);
+            obj.the1 = obj.dgUt.VtoT(obj.var1);
             obj.wind = obj.test.wind;
         end
         
         function freq = isAl(obj,thre,timS)
-            tSSz = size(timS); % time series' size
-            if rem(tSSz(2),obj.wind) ~= 0
+            tSSi = size(timS); % time series' size
+            if rem(tSSi(2),obj.wind) ~= 0
                 return
             end
             
-            timS = reshape(timS,tSSz(1),obj.wind,tSSz(2)/obj.wind);
+            timS = reshape(timS,tSSi(1),obj.wind,tSSi(2)/obj.wind);
             estm = obj.estm(timS);
-            alph = reshape(obj.alph,1,1,obj.nBin); %#ok<PROPLC>
-            post = repmat(alph,tSSz(1),tSSz(2)/obj.wind); %#ok<PROPLC>
-            post = exp(-(post.^2)./(2*estm));
-            sums = sum(post,3);
-            post = post./repmat(sums,1,1,obj.nBin);
+            noCo = obj.dgUt.TtoN(estm);
+            dum1 = repmat(obj.alph',tSSi(1),1,tSSi(2)/obj.wind);
+            dum2 = repmat(estm,1,obj.nBin,1);
+            dum3 = repmat(noCo,1,obj.nBin,1);
+            post = dum3.*exp(-(dum1.^2)./(2*dum2));
             prev = reshape(obj.dGau.pdVc,1,1,obj.nBin);
-            prev = repmat(prev,tSSz(1),tSSz(2)/obj.wind);
+            prev = repmat(prev,tSSi(1),tSSi(2)/obj.wind);
             llrM = post./prev;
             pdfs = obj.myHi(timS);
             stat = sum(pdfs.*llrM,3)*obj.wind;
@@ -44,18 +50,18 @@ classdef glrM < handle
         end
         
         function estm = estm(obj,timS)
-            % estimate the post-change parameter via maximum likelihood
+            % estimate the post-change parameter theta^2 via max likelihood
             % the estimate estm satisfies the following condition:
             % difference between the second moments of empirical and
             % m-projection distributions is minimized
-            mom2 = mean(timS.^2,3); % second moment empirical
+            mom2 = mean(timS.^2,2); % second moment empirical
             mask = mom2<obj.var1;
-            estm = (1-mask).*mom2+mask*obj.var1;
+            estm = (1-mask).*obj.dgUt.VtoT(mom2)+mask*obj.the1;
         end
         
         function pdfs = myHi(obj,timS) % my histogram
-            tSSz = size(timS); % time series' size
-            pdfs = zeros(tSSz(1),tSSz(2),obj.nBin);
+            tSSi = size(timS); % time series' size
+            pdfs = zeros(tSSi(1),tSSi(2),obj.nBin);
             for i = 1:obj.nBin
                 pdfs(:,:,i) = mean(timS==obj.alph(i),3);
             end

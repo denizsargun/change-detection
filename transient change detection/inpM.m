@@ -19,16 +19,16 @@ classdef inpM < handle
         function freq = isAl(obj,thre,timS)
             thr1 = thre(1); % first threshold
             thr2 = thre(2); % KL radius
-            tSSz = size(timS); % time series' size
-            if rem(tSSz(2),obj.wind) ~= 0
+            tSSi = size(timS); % time series' size
+            if rem(tSSi(2),obj.wind) ~= 0
                 return
             end
             
-            timS = reshape(timS,tSSz(1),tSSz(2)/obj.wind,obj.wind);
+            timS = reshape(timS,tSSi(1),tSSi(2)/obj.wind,obj.wind);
             mldd = dGau(obj.nBin,thr1); %#ok<CPROPLC> % most likely deviation dist.
             dPdf = mldd.pdVc; % deviation pdf
             dPdf = reshape(dPdf,1,1,obj.nBin);
-            repM = repmat(dPdf,tSSz(1),tSSz(2)/obj.wind,1); % replicate matrix dPdf
+            repM = repmat(dPdf,tSSi(1),tSSi(2)/obj.wind,1); % replicate matrix dPdf
             sta1 = var(timS,0,3); % statistics 1
             ePdf = obj.myHi(timS); % empirical pdfs
             zMas = ePdf==0; % zero mask
@@ -44,8 +44,8 @@ classdef inpM < handle
         end
         
         function pdfs = myHi(obj,timS) % my histogram
-            tSSz = size(timS); % time series' size
-            pdfs = zeros(tSSz(1),tSSz(2),obj.nBin);
+            tSSi = size(timS); % time series' size
+            pdfs = zeros(tSSi(1),tSSi(2),obj.nBin);
             for i = 1:obj.nBin
                 pdfs(:,:,i) = mean(timS==obj.alph(i),3);
             end
