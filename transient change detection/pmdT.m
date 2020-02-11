@@ -24,7 +24,7 @@ classdef pmdT < handle
             obj.dGau = dGau(11,obj.var0);
             obj.wind = 20;
             
-            obj.thrs = (-0.05:0.01:0.15)';
+            obj.thrs = (-0.05:0.01:0.5)';
             obj.meth = fmaM(obj);
 
 %             obj.thrs = (20:1:50)';
