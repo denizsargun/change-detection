@@ -9,8 +9,8 @@ classdef noCo < handle
             obj.alph = dGau.alph;
         end
         
-        function cons = getC(obj,varn)
-            pdVc = exp(-obj.alph.^2/(2*varn));
+        function cons = getC(obj,thet)
+            pdVc = exp(-obj.alph.^2/(2*thet));
             cons = 1/sum(pdVc);
         end
         

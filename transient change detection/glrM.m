@@ -2,8 +2,8 @@ classdef glrM < handle
     properties
         alph % alphabet
         dGau % discrete Gaussian sampler
+        dgUt % discrete Gaussian distribution utilities
         nBin % number of bins
-        noCo % normalization constant class
         test
         var1 % minimum post-change variance
         wind % window length
@@ -14,8 +14,8 @@ classdef glrM < handle
             obj.test = test;
             obj.dGau = obj.test.dGau;
             obj.alph = obj.dGau.alph;
+            obj.dgUt = obj.dGau.dgUt;
             obj.nBin = obj.dGau.nBin;
-            obj.noCo = obj.dGau.noCo;
             obj.var1 = obj.test.var1;
             obj.wind = obj.test.wind;
         end
@@ -26,7 +26,7 @@ classdef glrM < handle
                 return
             end
             
-            timS = reshape(timS,tSSz(1),tSSz(2)/obj.wind,obj.wind);
+            timS = reshape(timS,tSSz(1),obj.wind,tSSz(2)/obj.wind);
             estm = obj.estm(timS);
             alph = reshape(obj.alph,1,1,obj.nBin); %#ok<PROPLC>
             post = repmat(alph,tSSz(1),tSSz(2)/obj.wind); %#ok<PROPLC>

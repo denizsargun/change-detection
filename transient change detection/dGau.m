@@ -1,27 +1,26 @@
 classdef dGau < handle
+    % discrete Gaussian
     properties
         alph % alphabet
         cdVc % cumulative distribution vector
+        dgUt % discrete Gaussian distribution utilities
         mean
         nBin % number of bins
-        noCo % normalization constant class
         pdVc % probability distribution vector
-        varn % variance of continuous Gaussian random variable ~ discrete
+        thet % theta^2 parameter of discrete Gaussian distribution
+        varn % variance of discrete Gaussian distribution
     end
     
     methods
         function obj = dGau(nBin,varn)
-            if varn>2
-                disp("variance is out of bounds")
-            end
-            
             obj.nBin = nBin;
             obj.alph = (-(obj.nBin-1)/2:(obj.nBin-1)/2)';
+            obj.dgUt = dgUt(obj);
             obj.varn = varn;
-            obj.noCo = noCo(obj);
-            obj.pdVc = obj.noCo.getC(varn)*exp(-obj.alph.^2/(2*obj.varn));
-            obj.mean = obj.pdVc'*obj.alph;
+            obj.thet = obj.dgUt.VtoT(obj.varn);
+            obj.pdVc = obj.dgUt.VtoN(obj.varn)*exp(-(obj.alph.^2)/(2*obj.thet));
             obj.cdVc = cumsum(obj.pdVc);
+            obj.mean = 0;
         end
         
         function samp = samp(obj,m,n)
