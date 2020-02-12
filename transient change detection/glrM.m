@@ -36,8 +36,8 @@ classdef glrM < handle
             estm = obj.estm(timS);
             noCo = obj.dgUt.TtoN(estm);
 %             dum1 = repmat(obj.alph',tSSi(1),1,tSSi(2)/obj.wind);
-            dum2 = repmat(estm,1,obj.nBin,1);
-            dum3 = repmat(noCo,1,obj.nBin,1);
+            dum2 = repmat(estm,1,obj.wind,1);
+            dum3 = repmat(noCo,1,obj.wind,1);
 %             post = dum3.*exp(-(dum1.^2)./(2*dum2));
 %             prev = reshape(obj.dGau.pdVc,1,1,obj.nBin);
 %             prev = repmat(prev,tSSi(1),tSSi(2)/obj.wind);
@@ -59,7 +59,10 @@ classdef glrM < handle
             % m-projection distributions is minimized
             mom2 = mean(timS.^2,2); % second moment empirical
             mask = mom2<obj.var1;
-            estm = (1-mask).*obj.dgUt.VtoT(mom2)+mask*obj.the1;
+            mas2 = mom2>9.96; % mask 2
+            dum1 = (mask+mas2)+(1-(mask+mas2)).*mom2;
+            estm = (1-(mask+mas2)).*obj.dgUt.VtoT(dum1) ...
+                +mask*obj.the1+mas2*1e3;
         end
         
         function pdfs = myHi(obj,timS) % my histogram

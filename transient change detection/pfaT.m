@@ -23,11 +23,11 @@ classdef pfaT < handle
             obj.var1 = 2;
             obj.wind = 20;
             
-            obj.thrs = (-0.05:0.01:0.5)';
-            obj.meth = fmaM(obj);
+%             obj.thrs = (-0.05:0.01:0.5)';
+%             obj.meth = fmaM(obj);
 
-%             obj.thrs = (20:1:50)';
-%             obj.meth = glrM(obj);
+            obj.thrs = (1:0.5:15)';
+            obj.meth = glrM(obj);
 
 %             thr1 = (0.1:0.01:0.2)'; % positive
 %             thr2 = 2.^(-3:0.5:2)';

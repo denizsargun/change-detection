@@ -54,7 +54,7 @@ classdef dgUt < handle
         function varn = TtoV(obj,thet)
             thSi = size(thet);
             thet = thet(:);
-            if any(theta <= 0)
+            if any(thet <= 0)
                 disp("theta <= 0")
                 return
             end
