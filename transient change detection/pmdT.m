@@ -23,12 +23,12 @@ classdef pmdT < handle
             obj.var1 = 2;
             obj.dGau = dGau(11,obj.var0);
             obj.wind = 20;
-            
+                        
 %             obj.thrs = (-0.05:0.01:0.5)';
 %             obj.meth = fmaM(obj);
 
-            obj.thrs = (1:0.5:15)';
-            obj.meth = glrM(obj);
+%             obj.thrs = (1:0.5:15)';
+%             obj.meth = glrM(obj);
 
 %             thr1 = (0.1:0.01:0.2)'; % positive
 %             thr2 = 2.^(-3:0.5:2)';
@@ -57,7 +57,7 @@ classdef pmdT < handle
                 pmdE(i) = 0;
                 for j = 1:obj.itPo
                     disp([i,j])
-                    para = obj.var1+min(exprnd(1),11-obj.var1);
+                    para = obj.var1+min(exprnd(1),9.96-obj.var1);
                     obj.dGPo = dGau(11,para); %#ok<CPROP>
                     for chPo = 1:obj.wind
                         obj.saLe = obj.dura+chPo-1;

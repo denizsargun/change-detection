@@ -19,6 +19,11 @@ classdef inpM < handle
         end
         
         function freq = isAl(obj,thre,timS)
+            if or(thre(1) < 0,thre(2) < 0)
+                disp("thre(1) < 0 or thre(2) < 0")
+                return
+            end
+            
             thr1 = thre(1); % first threshold
             thr2 = thre(2); % KL radius
             tSSi = size(timS); % time series' size
@@ -28,6 +33,9 @@ classdef inpM < handle
             
             timS = reshape(timS,tSSi(1),obj.wind,tSSi(2)/obj.wind);
             sta1 = var(timS,0,2); % statistics 1
+            % I-projection of discrete Gaussian on the set of all 
+            % distribution with variance >= thr1 is a discrete Gaussian
+            % distribution of thr1 <= 10
             mldd = dGau(obj.nBin,thr1); %#ok<CPROPLC> % most likely deviation dist.
             dPdf = mldd.pdVc; % deviation pdf
             repM = repmat(dPdf',tSSi(1),1,tSSi(2)/obj.wind); % replicate matrix dPdf
@@ -46,7 +54,7 @@ classdef inpM < handle
         
         function pdfs = myHi(obj,timS) % my histogram
             tSSi = size(timS); % time series' size
-            pdfs = zeros(tSSi(1),obj.nBin,tSSi(2));
+            pdfs = zeros(tSSi(1),obj.nBin,tSSi(3));
             for i = 1:obj.nBin
                 pdfs(:,i,:) = mean(timS == obj.alph(i),2);
             end
