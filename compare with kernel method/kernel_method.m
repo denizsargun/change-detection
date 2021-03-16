@@ -6,7 +6,7 @@ classdef kernel_method < handle
         alphabet = [-1; 0; 1]
         b % threshold
         B = 25 % block size for offline problem
-        B0 = 50 % block size for online problem
+        B0 = 25 % block size for online problem
         m % alphabet size
         N = 10 % number of blocks
     end
@@ -56,6 +56,30 @@ classdef kernel_method < handle
                 emp_pmf(i) = sum(X==obj.alphabet(i))/B; %#ok<PROPLC>
             end
             
+        end
+        
+        function stopping_time = online(obj,Y)
+            len = length(Y);
+            matrix_X = obj.create_reference_blocks(obj.B0,obj.N);
+            time = obj.B0;
+            while 1
+                mmd_u_sq = zeros(obj.N,1);
+                for i = 1:obj.N
+                    mmd_u_sq(i) = obj.find_mmd_u_sq(matrix_X(:,i),Y(time-obj.B0+1:time));
+                end
+            
+                stat = sqrt(obj.B0*(obj.B0-1))*mean(mmd_u_sq);
+                if stat>=obj.b || time == len
+                    break
+                else
+                    time = time+1;
+                    new_X = obj.create_reference_blocks(1,obj.N);
+                    matrix_X = [new_X'; matrix_X(2:end,1:obj.N)];
+                end
+            
+            end
+            
+            stopping_time = time;
         end
         
     end
