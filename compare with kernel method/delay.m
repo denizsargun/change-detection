@@ -4,8 +4,8 @@ classdef delay < handle
     
     properties
         alphabet = [-1; 0; 1]
-        arl_max = 2e3 % max pre-change sequence length
-        b = [1:1/4:7]'% thresholds for method
+        arl_max = 2e4 % max pre-change sequence length
+        b = [1:1/4:5.5]'% thresholds for method
         B = 25 % block size
         m % alphabet size
         method
